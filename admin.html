@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الأدمن - بوابة الدفع</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background: #090d16; color: white; min-height: 100vh; }
+        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- رأس الصفحة -->
+        <div class="flex items-center justify-between mb-8 glass-panel p-6">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-shield-alt text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">لوحة تحكم المدفوعات (الأدمن)</h1>
+                    <p class="text-xs text-gray-400 mt-1">عرض جميع عمليات الدفع والبيانات والـ IP المرتبطة بالعملاء</p>
+                </div>
+            </div>
+            <button onclick="fetchTelegramUpdates()" class="bg-indigo-600 hover:bg-indigo-700 px-5 py-3 rounded-xl font-bold text-sm transition flex items-center gap-2 shadow-lg">
+                <i class="fas fa-sync-alt"></i> تحديث البيانات
+            </button>
+        </div>
+
+        <!-- جدول العمليات -->
+        <div class="glass-panel overflow-hidden p-6">
+            <h2 class="text-lg font-bold mb-4">سجل العمليات الواردة من تيليجرام:</h2>
+            <div id="loading" class="text-center py-12 text-gray-400">
+                <i class="fas fa-spinner fa-spin text-3xl mb-2"></i>
+                <p>جاري جلب سجل العمليات...</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table id="payments-table" class="w-full text-right border-collapse hidden">
+                    <thead>
+                        <tr class="border-b border-white/10 text-gray-400 text-xs">
+                            <th class="p-3">اسم المحول</th>
+                            <th class="p-3">هاتف / واتساب</th>
+                            <th class="p-3">طريقة الدفع</th>
+                            <th class="p-3">التوقيت</th>
+                            <th class="p-3">عنوان الـ IP والجهاز</th>
+                            <th class="p-3 text-center">الإيصال</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="text-sm divide-y divide-white/5">
+                        <!-- يتم تعبئتها برمجياً -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="no-data" class="hidden text-center py-12 text-gray-400">
+                <i class="fas fa-folder-open text-4xl mb-2"></i>
+                <p>لا توجد مدفوعات مسجلة حتى الآن.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BOT_TOKEN = "8891748364:AAGHnBFyQfivzTJurW-Hnz7ndvq5FM2J7p8";
+
+        async function fetchTelegramUpdates() {
+            const tableBody = document.getElementById('table-body');
+            const loading = document.getElementById('loading');
+            const table = document.getElementById('payments-table');
+            const noData = document.getElementById('no-data');
+
+            loading.classList.remove('hidden');
+            table.classList.add('hidden');
+            noData.classList.add('hidden');
+            tableBody.innerHTML = '';
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates`);
+                const data = await res.json();
+
+                if (data.ok && data.result.length > 0) {
+                    // فلترة الرسائل التي تحتوي على صور إيصالات الدفع
+                    const paymentMessages = data.result.filter(item => item.message && item.message.caption && item.message.caption.includes('تم إتمام عملية الدفع بنجاح'));
+
+                    if (paymentMessages.length > 0) {
+                        for (let item of paymentMessages) {
+                            const msg = item.message;
+                            const caption = msg.caption;
+                            const photoArray = msg.photo;
+                            const fileId = photoArray ? photoArray[photoArray.length - 1].file_id : null;
+
+                            // جلب رابط الصورة الفعلية من تيليجرام
+                            let photoUrl = '';
+                            if (fileId) {
+                                const fileRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
+                                const fileData = await fileRes.json();
+                                if (fileData.ok) {
+                                    photoUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${fileData.result.file_path}`;
+                                }
+                            }
+
+                            // استخراج البيانات من النص (Caption) باستخدام التعبير المنتظم أو النصوص
+                            const getVal = (regex) => { const match = caption.match(regex); return match ? match[1] : 'غير متوفر'; };
+                            
+                            const name = getVal(/اسم المحول:\s*(.+)/);
+                            const phone = getVal(/هاتف التحويل:\s*(.+)/);
+                            const whatsapp = getVal(/واتساب العميل:\s*(.+)/);
+                            const method = getVal(/طريقة التحويل:\s*(.+)/);
+                            const time = getVal(/توقيت التحويل:\s*(.+)/);
+                            const ip = getVal(/عنوان الـ IP:\s*(.+)/);
+                            const device = getVal(/نوع الجهاز:\s*(.+)/);
+                            const conn = getVal(/الاتصال:\s*(.+)/);
+
+                            const row = `
+                                <tr class="hover:bg-white/5 transition">
+                                    <td class="p-3 font-bold text-white">${name}</td>
+                                    <td class="p-3 font-mono text-xs text-gray-300">هاتف: ${phone}<br>واتساب: ${whatsapp}</td>
+                                    <td class="p-3 text-indigo-400 font-semibold">${method}</td>
+                                    <td class="p-3 text-xs text-gray-400">${time}</td>
+                                    <td class="p-3 text-xs font-mono text-gray-300">
+                                        <span class="text-emerald-400">IP: ${ip}</span><br>
+                                        <span>${device}</span><br>
+                                        <span class="text-gray-400">${conn}</span>
+                                    </td>
+                                    <td class="p-3 text-center">
+                                        ${photoUrl ? `<a href="${photoUrl}" target="_blank" class="inline-block"><img src="${photoUrl}" class="w-16 h-16 object-cover rounded-xl border border-white/20 hover:scale-110 transition shadow-md"></a>` : '<span class="text-xs text-gray-500">لا توجد صورة</span>'}
+                                    </td>
+                                </tr>
+                            `;
+                            tableBody.innerHTML += row;
+                        }
+                        loading.classList.add('hidden');
+                        table.classList.remove('hidden');
+                    } else {
+                        loading.classList.add('hidden');
+                        noData.classList.remove('hidden');
+                    }
+                } else {
+                    loading.classList.add('hidden');
+                    noData.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                loading.classList.add('hidden');
+                noData.classList.remove('hidden');
+            }
+        }
+
+        window.onload = fetchTelegramUpdates;
+    </script>
+</body>
+</html>
