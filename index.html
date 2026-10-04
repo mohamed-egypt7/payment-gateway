@@ -20,6 +20,14 @@
         #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; }
         .show-toast { top: 20px !important; }
     </style>
+    <!-- استدعاء مكتبة Gemini API الرسمية -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.run/@google/genai"
+        }
+      }
+    </script>
 </head>
 <body class="flex items-center justify-center p-4">
 
@@ -32,13 +40,12 @@
             <div class="w-20 h-20 bg-indigo-500 rounded-full mx-auto flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/30">
                 <i class="fas fa-wallet text-3xl"></i>
             </div>
-            <h1 class="text-2xl font-bold mb-1">بوابة الدفع السريع</h1>
+            <h1 class="text-2xl font-bold mb-1">بوابة الدفع الذكية</h1>
             <p class="text-gray-300 text-sm bg-white/10 inline-block px-4 py-1 rounded-full mt-2">الدفع لـ: <span class="font-bold text-white">ياسر محمد</span></p>
         </div>
 
         <div class="space-y-4 mt-8">
-            <!-- إنستا باي -->
-            <a href="https://ipn.eg/S/mohamed1c/instapay/31DvFy" target="_blank" class="btn-hover flex items-center justify-between w-full p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer">
+            <a href="https://ipn.eg/S/mohamed1c/instapay/31DvFy" target="_blank" onclick="logAttempt('ضغط على رابط إنستاباي مباشر')" class="btn-hover flex items-center justify-between w-full p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 shadow">
                         <img src="images/instapay.png" alt="InstaPay" class="w-full h-full object-contain">
@@ -51,7 +58,6 @@
                 <i class="fas fa-chevron-left text-gray-400"></i>
             </a>
 
-            <!-- المحافظ الإلكترونية -->
             <div onclick="showPage('page-wallets')" class="btn-hover flex items-center justify-between w-full p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center p-2 shadow">
@@ -66,7 +72,6 @@
             </div>
         </div>
 
-        <!-- زر تأكيد التحويل المباشر -->
         <div class="mt-6">
             <button onclick="showPage('page-confirm')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
                 <i class="fas fa-check-circle"></i> أنا حولت، أكد التحويل 🚀
@@ -85,19 +90,19 @@
         <div class="grid grid-cols-2 gap-4">
             <div onclick="selectWallet('vodafone')" class="btn-hover bg-white/5 border border-red-500/30 p-4 rounded-xl text-center cursor-pointer flex flex-col items-center justify-center">
                 <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow">
-                    <img src="images/vodafone.png" alt="Vodafone Cash" class="w-full h-full object-contain">
+                    <img src="images/vodafone.png" alt="Vodafone" class="w-full h-full object-contain">
                 </div>
                 <h3 class="font-bold text-xs text-red-400">فودافون كاش</h3>
             </div>
             <div onclick="selectWallet('orange')" class="btn-hover bg-white/5 border border-orange-500/30 p-4 rounded-xl text-center cursor-pointer flex flex-col items-center justify-center">
                 <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow">
-                    <img src="images/orange.png" alt="Orange Cash" class="w-full h-full object-contain">
+                    <img src="images/orange.png" alt="Orange" class="w-full h-full object-contain">
                 </div>
                 <h3 class="font-bold text-xs text-orange-400">أورنج كاش</h3>
             </div>
             <div onclick="selectWallet('etisalat')" class="btn-hover bg-white/5 border border-green-500/30 p-4 rounded-xl text-center cursor-pointer flex flex-col items-center justify-center">
                 <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow">
-                    <img src="images/etisalat.png" alt="Etisalat Cash" class="w-full h-full object-contain">
+                    <img src="images/etisalat.png" alt="Etisalat" class="w-full h-full object-contain">
                 </div>
                 <h3 class="font-bold text-xs text-green-400">اتصالات كاش</h3>
             </div>
@@ -110,7 +115,7 @@
         </div>
     </div>
 
-    <!-- الصفحة الثالثة: الأزرار المخصصة بأسماء التطبيقات -->
+    <!-- الصفحة الثالثة: خيارات التطبيق -->
     <div id="page-action" class="hidden-page glass-panel w-full max-w-md p-8 text-center fade-in">
         <button onclick="showPage('page-wallets')" class="text-gray-400 hover:text-white mb-4 flex items-center gap-2 transition">
             <i class="fas fa-arrow-right"></i> رجوع
@@ -154,24 +159,34 @@
         </div>
     </div>
 
-    <!-- الصفحة الرابعة: تأكيد التحويل ورفع الإيصال -->
+    <!-- الصفحة الرابعة: التأكيد والتحقيق بالذكاء الاصطناعي مع خانة رقم الواتساب للعميل -->
     <div id="page-confirm" class="hidden-page glass-panel w-full max-w-md p-8 fade-in">
         <button onclick="showPage('page-main')" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
             <i class="fas fa-arrow-right"></i> رجوع للرئيسية
         </button>
 
-        <h2 class="text-xl font-bold mb-2 text-center">تأكيد عملية التحويل</h2>
-        <p class="text-gray-400 text-sm mb-6 text-center">أدخل بيانات التحويل بدقة لتأكيد العملية للإدارة.</p>
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <h2 class="text-xl font-bold text-center">تأكيد الدفع الذكي</h2>
+            <span class="bg-indigo-500/20 text-indigo-400 text-xs px-2.5 py-1 rounded-full border border-indigo-500/30 flex items-center gap-1 font-semibold">
+                <i class="fas fa-microchip"></i> Gemini AI Verified
+            </span>
+        </div>
+        <p class="text-gray-400 text-sm mb-6 text-center">أدخل بيانات التحويل وقم بإرفاق الإيصال ليتم فحصه واعتماده.</p>
 
         <div class="space-y-4 text-right">
             <div>
                 <label class="block text-xs text-gray-300 mb-1">اسم صاحب المحفظة المحول منها:</label>
-                <input type="text" id="sender-name" placeholder="مثال: أحمد محمد علي" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500">
+                <input type="text" id="sender-name" placeholder="مثال: أحمد محمد علي" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500" onchange="logIncompleteAttempt('دخل صفحة التأكيد ولم يكمل')">
             </div>
 
             <div>
-                <label class="block text-xs text-gray-300 mb-1">رقم هاتفك المحول منه (مصري 11 رقم):</label>
+                <label class="block text-xs text-gray-300 mb-1">رقم هاتفك المحول منه (11 رقم):</label>
                 <input type="tel" id="sender-phone" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left" dir="ltr">
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-300 mb-1">رقم الواتساب الخاص بك (للتواصل عند الحاجة):</label>
+                <input type="tel" id="sender-whatsapp" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left" dir="ltr">
             </div>
 
             <div>
@@ -201,13 +216,21 @@
                 </label>
             </div>
 
-            <button onclick="submitTransfer()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg mt-4">
-                <i class="fas fa-paper-plane"></i> اتمام عملية الدفع
+            <button onclick="verifyAndSubmitWithGemini()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg mt-2">
+                <i class="fas fa-robot"></i> التحقق بالذكاء الاصطناعي وإتمام الدفع
             </button>
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { GoogleGenAI } from "@google/genai";
+
+        const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"; 
+        const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+        
+        const BOT_TOKEN = "8891748364:AAGHnBFyQfivzTJurW-Hnz7ndvq5FM2J7p8";
+        const CHAT_ID = "8557873303";
+
         const walletData = {
             vodafone: { name: "فودافون كاش", appName: "فتح تطبيق فودافون كاش", link: "http://vf.eg/vfcash?id=mt&qrId=Mfason", ussd: "*9*7*01003013765#" },
             orange: { name: "أورنج كاش", appName: "فتح تطبيق أورنج كاش (Max it)", link: "https://www.orange.eg/ar/services/orange-financial-services", ussd: "*115*01003013765#" },
@@ -216,26 +239,33 @@
         };
 
         let currentWalletKey = '';
+        let hasLoggedPageVisit = false;
 
-        function showPage(pageId) {
+        window.showPage = function(pageId) {
             document.querySelectorAll('div[id^="page-"]').forEach(el => el.classList.add('hidden-page'));
             const targetPage = document.getElementById(pageId);
             targetPage.classList.remove('hidden-page');
             targetPage.classList.remove('fade-in');
             void targetPage.offsetWidth; 
             targetPage.classList.add('fade-in');
+
+            if (pageId === 'page-confirm' && !hasLoggedPageVisit) {
+                hasLoggedPageVisit = true;
+                logTelegramAlert("👁️ [تنبيه زائر موقع]: قام شخص بفتح صفحة 'تأكيد التحويل' ويقوم بإدخال بياناته الآن.");
+            }
         }
 
-        function selectWallet(walletKey) {
+        window.selectWallet = function(walletKey) {
             currentWalletKey = walletKey;
             const wallet = walletData[walletKey];
             document.getElementById('wallet-title').innerText = `تحويل ${wallet.name} - ياسر محمد`;
             document.getElementById('open-app-text').innerText = wallet.appName;
             document.getElementById('transfer-method').value = wallet.name;
             showPage('page-action');
+            logTelegramAlert(`📱 [اختيار محفظة]: المستخدم اختار التحويل عبر (${wallet.name})`);
         }
 
-        function openWalletApp() {
+        window.openWalletApp = function() {
             const wallet = walletData[currentWalletKey];
             navigator.clipboard.writeText("01003013765").then(() => {
                 showToast(`تم نسخ رقمك، جاري فتح ${wallet.name}...`);
@@ -245,7 +275,7 @@
             }
         }
 
-        function openDialer() {
+        window.openDialer = function() {
             const wallet = walletData[currentWalletKey];
             navigator.clipboard.writeText("01003013765").then(() => {
                 showToast("تم نسخ الرقم وتفعيل كود الاتصال!");
@@ -256,24 +286,53 @@
             }
         }
 
-        function copyNumber(number) {
+        window.copyNumber = function(number) {
             navigator.clipboard.writeText(number).then(() => {
                 showToast("تم نسخ الرقم بنجاح!");
             });
+            logTelegramAlert("📋 [نسخ رقم]: قام المستخدم بـ نسخ رقم المحفظة 01003013765");
         }
 
-        function updateFileLabel() {
+        window.updateFileLabel = function() {
             const fileInput = document.getElementById('receipt-file');
             const labelText = document.getElementById('file-label-text');
             if (fileInput.files.length > 0) {
                 labelText.innerText = "تم اختيار: " + fileInput.files[0].name;
                 labelText.classList.add("text-emerald-400", "font-bold");
+                logTelegramAlert("📎 [إرفاق إيصال]: قام العميل برفع واختيار صورة إيصال بانتظار التأكيد.");
             }
         }
 
-        function submitTransfer() {
+        function fileToGenerativePart(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64Data = reader.result.split(',')[1];
+                    resolve({
+                        inlineData: { data: base64Data, mimeType: file.type }
+                    });
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function logTelegramAlert(messageText) {
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: messageText })
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        window.verifyAndSubmitWithGemini = async function() {
             const senderName = document.getElementById('sender-name').value.trim();
             const phone = document.getElementById('sender-phone').value.trim();
+            const whatsapp = document.getElementById('sender-whatsapp').value.trim();
             const method = document.getElementById('transfer-method').value;
             const transferTime = document.getElementById('transfer-time').value.trim();
             const fileInput = document.getElementById('receipt-file');
@@ -283,10 +342,14 @@
                 return;
             }
 
-            // تحقق من رقم الهاتف المصري (يبدأ بـ 01 ويتكون من 11 رقم)
             const egyptianPhoneRegex = /^01[0125][0-9]{8}$/;
             if (!egyptianPhoneRegex.test(phone)) {
-                showToast("يرجى إدخال رقم هاتف مصري صحيح (11 رقم)!");
+                showToast("يرجى إدخال رقم هاتف محول منه صحيح (11 رقم)!");
+                return;
+            }
+
+            if (!egyptianPhoneRegex.test(whatsapp)) {
+                showToast("يرجى إدخال رقم واتساب صحيح للتواصل (11 رقم)!");
                 return;
             }
 
@@ -297,46 +360,73 @@
 
             if (fileInput.files.length === 0) {
                 showToast("يرجى إرفاق صورة إيصال التحويل!");
+                logTelegramAlert(`⚠️ [موقف ناقص]: حاول العميل إرسال البيانات (الاسم: ${senderName}) بدون إرفاق صورة الإيصال.`);
                 return;
             }
 
-            showToast("جاري اتمام عملية الدفع وإرسال البيانات...");
+            showToast("🔍 جاري فحص وتحقيق جيميناي من صورة الإيصال...");
 
-            const token = "8891748364:AAGHnBFyQfivzTJurW-Hnz7ndvq5FM2J7p8";
-            const chatId = "8557873303";
+            try {
+                const imagePart = await fileToGenerativePart(fileInput.files[0]);
+                
+                const response = await ai.models.generateContent({
+                    model: 'gemini-2.5-flash',
+                    contents: [
+                        imagePart,
+                        `هل هذه الصورة تعتبر إيصال تحويل أموال حقيقي (سواء إنستاباي، فودافون كاش، أورنج، اتصالات، أو وي)؟ أجب بكلمة واحدة فقط: نعم أو لا.`
+                    ]
+                });
 
-            const formData = new FormData();
-            formData.append('chat_id', chatId);
-            formData.append('photo', fileInput.files[0]);
-            formData.append('caption', `🚀 عملية تحويل جديدة!\n\n👤 المستفيد: ياسر محمد\n🏷️ اسم المحول: ${senderName}\n📱 رقم المحول: ${phone}\n💳 طريقة التحويل: ${method}\n⏰ توقيت التحويل: ${transferTime}`);
+                const aiResult = response.text ? response.text.trim() : "";
 
-            fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.ok) {
+                // لو الإيصال خطأ أو غير حقيقي
+                if (aiResult.includes("لا")) {
+                    showToast("❌ عذراً، الإيصال مرفوض من النظام الذكي! يرجى التأكد من رفع إيصال صحيح.");
+
+                    const errorFormData = new FormData();
+                    errorFormData.append('chat_id', CHAT_ID);
+                    errorFormData.append('photo', fileInput.files[0]);
+                    errorFormData.append('caption', `⚠️ [Gemini AI Alert - إيصال مرفوض/خاطئ]\n🚨 حاول العميل إرسال صورة غير صحيحة!\n\n👤 اسم العميل: ${senderName}\n📱 الهاتف المحول منه: ${phone}\n💬 واتساب العميل: ${whatsapp}\n💳 الطريقة: ${method}`);
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: errorFormData });
+                    return;
+                }
+
+                // لو الإيصال صحيح 100%
+                showToast("✅ تم التحقيق بنجاح! جاري إرسال الإشعار لتليجرام...");
+
+                const formData = new FormData();
+                formData.append('chat_id', CHAT_ID);
+                formData.append('photo', fileInput.files[0]);
+                formData.append('caption', `🛡️ [Gemini AI Verified - تم التحقيق]\n🚀 عملية تحويل موثوقة ومفحوصة بنجاح!\n\n👤 المستفيد: ياسر محمد\n🏷️ اسم المحول: ${senderName}\n📱 هاتف التحويل: ${phone}\n💬 واتساب العميل: ${whatsapp}\n💳 طريقة التحويل: ${method}\n⏰ توقيت التحويل: ${transferTime}`);
+
+                const tgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const tgData = await tgRes.json();
+
+                if (tgData.ok) {
                     showToast("تم اتمام عملية الدفع بنجاح! شكراً لك.");
                     setTimeout(() => {
                         document.getElementById('sender-name').value = '';
                         document.getElementById('sender-phone').value = '';
+                        document.getElementById('sender-whatsapp').value = '';
                         document.getElementById('transfer-time').value = '';
                         fileInput.value = '';
-                        document.getElementById('file-label-text').innerText = "اضغط هنا لاختيار صورة الإيصال؛";
+                        document.getElementById('file-label-text').innerText = "اضغط هنا لاختيار صورة الإيصال";
                         showPage('page-main');
                     }, 2500);
                 } else {
-                    showToast("فشل الإرسال، حاول مرة أخرى.");
+                    showToast("فشل إرسال الإشعار، حاول مرة أخرى.");
                 }
-            })
-            .catch(err => {
-                console.error(err);
-                showToast("خطأ في الاتصال بالإنترنت.");
-            });
+
+            } catch (error) {
+                console.error(error);
+                showToast("خطأ أثناء الاتصال بنظام الذكاء الاصطناعي.");
+            }
         }
 
-        function showToast(msg = "تمت العملية بنجاح!") {
+        window.showToast = function(msg = "تمت العملية بنجاح!") {
             const toast = document.getElementById('toast');
             toast.innerText = msg;
             toast.classList.add('show-toast');
