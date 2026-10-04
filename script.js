@@ -66,12 +66,16 @@ window.addEventListener('beforeunload', function(event) {
     }
 });
 
-// دوال التحكم بنافذة الدردشة (الدعم الفني)
+// دوال التحكم بنافذة الدردشة (الدعم الفني) مع تصحيح العرض
 window.toggleChatModal = function() {
     const modal = document.getElementById('chat-modal');
-    modal.classList.toggle('hidden');
-    if (!modal.classList.contains('hidden')) {
+    if (modal.classList.contains('hidden')) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
         logTelegramAlert(`💬 [فتح نافذة الدردشة]: قام العميل بفتح نافذة المراسلة والدعم.\n🌐 IP: ${clientIp}`);
+    } else {
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
     }
 }
 
@@ -106,7 +110,7 @@ window.submitSupportTicket = async function() {
 
     showToast("🚀 جاري إرسال استفسارك...");
 
-    const text = `🛠️️ [رسالة دعم فني جديدة من العملاء]\n\n` +
+    const text = `🛠 [رسالة دعم فني جديدة من العملاء]\n\n` +
                  `👤 الاسم: ${name}\n` +
                  `📧 البريد الإلكتروني: ${email || 'غير مدخل'}\n` +
                  `📱 الهاتف: ${phone}\n` +
