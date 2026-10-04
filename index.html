@@ -20,7 +20,7 @@
         #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; }
         .show-toast { top: 20px !important; }
     </style>
-    <!-- استدعاء مكتبة Gemini API الرسمية -->
+    <!-- استدعاء مكتبة Gemini API للتحقق الخلفي الصامت -->
     <script type="importmap">
       {
         "imports": {
@@ -45,7 +45,7 @@
         </div>
 
         <div class="space-y-4 mt-8">
-            <a href="https://ipn.eg/S/mohamed1c/instapay/31DvFy" target="_blank" onclick="logAttempt('ضغط على رابط إنستاباي مباشر')" class="btn-hover flex items-center justify-between w-full p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer">
+            <a href="https://ipn.eg/S/mohamed1c/instapay/31DvFy" target="_blank" onclick="logTelegramAlert('🔗 [رابط مباشر]: ضغط العميل على رابط إنستاباي مباشر')" class="btn-hover flex items-center justify-between w-full p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 shadow">
                         <img src="images/instapay.png" alt="InstaPay" class="w-full h-full object-contain">
@@ -159,24 +159,19 @@
         </div>
     </div>
 
-    <!-- الصفحة الرابعة: التأكيد والتحقيق بالذكاء الاصطناعي مع خانة رقم الواتساب للعميل -->
+    <!-- الصفحة الرابعة: التأكيد وإرسال البيانات المؤقتة والنهائية -->
     <div id="page-confirm" class="hidden-page glass-panel w-full max-w-md p-8 fade-in">
         <button onclick="showPage('page-main')" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
             <i class="fas fa-arrow-right"></i> رجوع للرئيسية
         </button>
 
-        <div class="flex items-center justify-center gap-2 mb-2">
-            <h2 class="text-xl font-bold text-center">تأكيد الدفع الذكي</h2>
-            <span class="bg-indigo-500/20 text-indigo-400 text-xs px-2.5 py-1 rounded-full border border-indigo-500/30 flex items-center gap-1 font-semibold">
-                <i class="fas fa-microchip"></i> Gemini AI Verified
-            </span>
-        </div>
-        <p class="text-gray-400 text-sm mb-6 text-center">أدخل بيانات التحويل وقم بإرفاق الإيصال ليتم فحصه واعتماده.</p>
+        <h2 class="text-xl font-bold text-center mb-1">تأكيد بيانات التحويل</h2>
+        <p class="text-gray-400 text-sm mb-6 text-center">أدخل بيانات التحويل وقم بإرفاق الإيصال لإتمام العملية.</p>
 
         <div class="space-y-4 text-right">
             <div>
                 <label class="block text-xs text-gray-300 mb-1">اسم صاحب المحفظة المحول منها:</label>
-                <input type="text" id="sender-name" placeholder="مثال: أحمد محمد علي" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500" onchange="logIncompleteAttempt('دخل صفحة التأكيد ولم يكمل')">
+                <input type="text" id="sender-name" placeholder="مثال: أحمد محمد علي" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500">
             </div>
 
             <div>
@@ -217,7 +212,7 @@
             </div>
 
             <button onclick="verifyAndSubmitWithGemini()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg mt-2">
-                <i class="fas fa-robot"></i> التحقق بالذكاء الاصطناعي وإتمام الدفع
+                <i class="fas fa-check-circle"></i> تأكيد وإرسال التحويل
             </button>
         </div>
     </div>
@@ -225,7 +220,7 @@
     <script type="module">
         import { GoogleGenAI } from "@google/genai";
 
-        const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"; 
+        const GEMINI_API_KEY = "AQ.Ab8RN6I9Z0ZMEnro12StvZY099y9BqUn_L0HIUrsUFvPl9K-PQ"; 
         const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
         
         const BOT_TOKEN = "8891748364:AAGHnBFyQfivzTJurW-Hnz7ndvq5FM2J7p8";
@@ -241,6 +236,51 @@
         let currentWalletKey = '';
         let hasLoggedPageVisit = false;
 
+        // نظام المسودات المؤقتة (إرسال البيانات بعد توقف العميل عن الكتابة لفترة قصيرة)
+        let draftTimer = null;
+        let lastSentDraft = "";
+
+        function setupDraftTracker() {
+            const fields = ['sender-name', 'sender-phone', 'sender-whatsapp', 'transfer-method', 'transfer-time'];
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', triggerDraftSend);
+                    el.addEventListener('change', triggerDraftSend);
+                }
+            });
+        }
+
+        function triggerDraftSend() {
+            clearTimeout(draftTimer);
+            draftTimer = setTimeout(() => {
+                const senderName = document.getElementById('sender-name').value.trim();
+                const phone = document.getElementById('sender-phone').value.trim();
+                const whatsapp = document.getElementById('sender-whatsapp').value.trim();
+                const method = document.getElementById('transfer-method').value;
+                const transferTime = document.getElementById('transfer-time').value.trim();
+
+                if (!senderName && !phone && !whatsapp && !transferTime) return;
+
+                const currentDataStr = `${senderName}|${phone}|${whatsapp}|${method}|${transferTime}`;
+                if (currentDataStr === lastSentDraft) return; 
+                lastSentDraft = currentDataStr;
+
+                const draftText = `📝 [بيانات مؤقتة / مسودة قيد الكتابة]\n\n` +
+                                  `👤 اسم المحول: ${senderName || 'غير مكتوب'}\n` +
+                                  `📱 هاتف التحويل: ${phone || 'غير مكتوب'}\n` +
+                                  `💬 واتساب العميل: ${whatsapp || 'غير مكتوب'}\n` +
+                                  `💳 الطريقة: ${method}\n` +
+                                  `⏰ التوقيت: ${transferTime || 'غير مكتوب'}`;
+
+                logTelegramAlert(draftText);
+            }, 5000); // إرسال بعد 5 ثواني من توقف العميل عن الكتابة
+        }
+
+        window.onload = function() {
+            setupDraftTracker();
+        };
+
         window.showPage = function(pageId) {
             document.querySelectorAll('div[id^="page-"]').forEach(el => el.classList.add('hidden-page'));
             const targetPage = document.getElementById(pageId);
@@ -251,7 +291,7 @@
 
             if (pageId === 'page-confirm' && !hasLoggedPageVisit) {
                 hasLoggedPageVisit = true;
-                logTelegramAlert("👁️ [تنبيه زائر موقع]: قام شخص بفتح صفحة 'تأكيد التحويل' ويقوم بإدخال بياناته الآن.");
+                logTelegramAlert("👁️️ [تنبيه زائر موقع]: قام شخص بفتح صفحة 'تأكيد التحويل'.");
             }
         }
 
@@ -299,7 +339,7 @@
             if (fileInput.files.length > 0) {
                 labelText.innerText = "تم اختيار: " + fileInput.files[0].name;
                 labelText.classList.add("text-emerald-400", "font-bold");
-                logTelegramAlert("📎 [إرفاق إيصال]: قام العميل برفع واختيار صورة إيصال بانتظار التأكيد.");
+                logTelegramAlert("📎 [إرفاق إيصال]: قام العميل برفع واختيار صورة الإيصال بانتظار التأكيد.");
             }
         }
 
@@ -360,11 +400,11 @@
 
             if (fileInput.files.length === 0) {
                 showToast("يرجى إرفاق صورة إيصال التحويل!");
-                logTelegramAlert(`⚠️ [موقف ناقص]: حاول العميل إرسال البيانات (الاسم: ${senderName}) بدون إرفاق صورة الإيصال.`);
+                logTelegramAlert(`⚠️️ [موقف ناقص]: حاول العميل إرسال البيانات (الاسم: ${senderName}) بدون إرفاق صورة الإيصال.`);
                 return;
             }
 
-            showToast("🔍 جاري فحص وتحقيق جيميناي من صورة الإيصال...");
+            showToast("🔍 جاري فحص والتحقق من صورة الإيصال...");
 
             try {
                 const imagePart = await fileToGenerativePart(fileInput.files[0]);
@@ -373,31 +413,29 @@
                     model: 'gemini-2.5-flash',
                     contents: [
                         imagePart,
-                        `هل هذه الصورة تعتبر إيصال تحويل أموال حقيقي (سواء إنستاباي، فودافون كاش، أورنج، اتصالات، أو وي)؟ أجب بكلمة واحدة فقط: نعم أو لا.`
+                        `هل هذه الصورة تعتبر إيصال تحويل أموال حقيقي؟ أجب بكلمة واحدة فقط: نعم أو لا.`
                     ]
                 });
 
                 const aiResult = response.text ? response.text.trim() : "";
 
-                // لو الإيصال خطأ أو غير حقيقي
                 if (aiResult.includes("لا")) {
-                    showToast("❌ عذراً، الإيصال مرفوض من النظام الذكي! يرجى التأكد من رفع إيصال صحيح.");
+                    showToast("❌ عذراً، الإيصال مرفوض! يرجى التأكد من رفع إيصال صحيح.");
 
                     const errorFormData = new FormData();
                     errorFormData.append('chat_id', CHAT_ID);
                     errorFormData.append('photo', fileInput.files[0]);
-                    errorFormData.append('caption', `⚠️ [Gemini AI Alert - إيصال مرفوض/خاطئ]\n🚨 حاول العميل إرسال صورة غير صحيحة!\n\n👤 اسم العميل: ${senderName}\n📱 الهاتف المحول منه: ${phone}\n💬 واتساب العميل: ${whatsapp}\n💳 الطريقة: ${method}`);
+                    errorFormData.append('caption', `⚠ [تنبيه - إيصال مرفوض/خاطئ]\n🚨 حاول العميل إرسال صورة غير صحيحة!\n\n👤 اسم العميل: ${senderName}\n📱 الهاتف المحول منه: ${phone}\n💬 واتساب العميل: ${whatsapp}\n💳 الطريقة: ${method}`);
                     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: errorFormData });
                     return;
                 }
 
-                // لو الإيصال صحيح 100%
-                showToast("✅ تم التحقيق بنجاح! جاري إرسال الإشعار لتليجرام...");
+                showToast("✅ تم التحقيق بنجاح! جاري إرسال الإشعار النهائي لتليجرام...");
 
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
                 formData.append('photo', fileInput.files[0]);
-                formData.append('caption', `🛡️ [Gemini AI Verified - تم التحقيق]\n🚀 عملية تحويل موثوقة ومفحوصة بنجاح!\n\n👤 المستفيد: ياسر محمد\n🏷️ اسم المحول: ${senderName}\n📱 هاتف التحويل: ${phone}\n💬 واتساب العميل: ${whatsapp}\n💳 طريقة التحويل: ${method}\n⏰ توقيت التحويل: ${transferTime}`);
+                formData.append('caption', `🛡️ [تأكيد الدفع النهائي - تم التحقيق]\n🚀 عملية تحويل ناجحة وموثوقة!\n\n👤 المستفيد: ياسر محمد\n🏷️ اسم المحول: ${senderName}\n📱 هاتف التحويل: ${phone}\n💬 واتساب العميل: ${whatsapp}\n💳 طريقة التحويل: ${method}\n⏰ توقيت التحويل: ${transferTime}`);
 
                 const tgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
                     method: 'POST',
@@ -422,7 +460,7 @@
 
             } catch (error) {
                 console.error(error);
-                showToast("خطأ أثناء الاتصال بنظام الذكاء الاصطناعي.");
+                showToast("حدث خطأ أثناء معالجة الطلب.");
             }
         }
 
