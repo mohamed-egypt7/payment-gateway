@@ -149,8 +149,8 @@
         </div>
     </div>
 
-    <!-- الصفحة الأولى -->
-    <div id="page-main" class="glass-panel w-full max-w-md p-8 text-center page-transition">
+    <!-- الصفحة الأولى (الرئيسية) -->
+    <div id="page-main" class="hidden-page glass-panel w-full max-w-md p-8 text-center page-transition">
         <div class="mb-6">
             <div class="w-20 h-20 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-xl shadow-indigo-500/40 float-anim">
                 <i class="fas fa-wallet text-3xl text-white"></i>
@@ -177,7 +177,7 @@
                 <i class="fas fa-chevron-left text-gray-400"></i>
             </a>
 
-            <div onclick="showPage('page-bank')" class="btn-hover flex items-center justify-between w-full p-4 rounded-2xl border border-white/10 bg-white/5 cursor-pointer">
+            <div onclick="showPage('page-bank', true)" class="btn-hover flex items-center justify-between w-full p-4 rounded-2xl border border-white/10 bg-white/5 cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center p-2 shadow-lg">
                         <i class="fas fa-university text-2xl text-white"></i>
@@ -190,7 +190,7 @@
                 <i class="fas fa-chevron-left text-gray-400"></i>
             </div>
 
-            <div onclick="showPage('page-wallets')" class="btn-hover flex items-center justify-between w-full p-4 rounded-2xl border border-white/10 bg-white/5 cursor-pointer">
+            <div onclick="showPage('page-wallets', true)" class="btn-hover flex items-center justify-between w-full p-4 rounded-2xl border border-white/10 bg-white/5 cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center p-2 shadow-lg">
                         <i class="fas fa-mobile-alt text-2xl text-white"></i>
@@ -205,7 +205,7 @@
         </div>
 
         <div class="mt-6">
-            <button onclick="showPage('page-confirm')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30">
+            <button onclick="showPage('page-confirm', true)" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30">
                 <i class="fas fa-check-circle"></i> أنا حولت، أكد التحويل 🚀
             </button>
         </div>
@@ -213,7 +213,7 @@
 
     <!-- صفحة التحويل البنكي -->
     <div id="page-bank" class="hidden-page glass-panel w-full max-w-md p-8 page-transition">
-        <button onclick="showPage('page-main')" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
+        <button onclick="showPage('page-main', true)" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
             <i class="fas fa-arrow-right"></i> رجوع
         </button>
         <h2 class="text-xl font-bold mb-2 text-center">تفاصيل التحويل البنكي</h2>
@@ -253,7 +253,7 @@
 
     <!-- صفحة المحافظ الإلكترونية -->
     <div id="page-wallets" class="hidden-page glass-panel w-full max-w-md p-8 page-transition">
-        <button onclick="showPage('page-main')" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
+        <button onclick="showPage('page-main', true)" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
             <i class="fas fa-arrow-right"></i> رجوع
         </button>
         <h2 class="text-xl font-bold mb-6 text-center">اختر المحفظة للتحويل</h2>
@@ -287,7 +287,7 @@
 
     <!-- صفحة خيارات المحفظة -->
     <div id="page-action" class="hidden-page glass-panel w-full max-w-md p-8 text-center page-transition">
-        <button onclick="showPage('page-wallets')" class="text-gray-400 hover:text-white mb-4 flex items-center gap-2 transition">
+        <button onclick="showPage('page-wallets', true)" class="text-gray-400 hover:text-white mb-4 flex items-center gap-2 transition">
             <i class="fas fa-arrow-right"></i> رجوع
         </button>
         <div class="w-16 h-16 bg-white/10 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-inner">
@@ -316,7 +316,7 @@
             </div>
         </div>
         <div class="mt-4">
-            <button onclick="showPage('page-confirm')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold py-3.5 rounded-2xl transition shadow-lg flex items-center justify-center gap-2">
+            <button onclick="showPage('page-confirm', true)" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold py-3.5 rounded-2xl transition shadow-lg flex items-center justify-center gap-2">
                 <i class="fas fa-check-circle"></i> أنا حولت، أكد التحويل 🚀
             </button>
         </div>
@@ -324,7 +324,7 @@
 
     <!-- صفحة تأكيد التحويل -->
     <div id="page-confirm" class="hidden-page glass-panel w-full max-w-md p-8 page-transition">
-        <button onclick="showPage('page-main')" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
+        <button onclick="showPage('page-main', true)" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
             <i class="fas fa-arrow-right"></i> رجوع للرئيسية
         </button>
         <h2 class="text-xl font-bold text-center mb-1">تأكيد بيانات التحويل</h2>
@@ -426,8 +426,23 @@
             return typeDesc;
         }
 
+        // تحديد الصفحة المطلوبة تلقائياً بناءً على الابط (Hash) عند التحميل
         window.onload = function() {
             fetchClientIP();
+            
+            const hash = window.location.hash.replace('#', '');
+            if (hash === 'bank') {
+                showPage('page-bank', false);
+            } else if (hash === 'wallets') {
+                showPage('page-wallets', false);
+            } else if (hash === 'confirm') {
+                showPage('page-confirm', false);
+            } else if (hash === 'vodafone' || hash === 'orange' || hash === 'etisalat' || hash === 'we') {
+                selectWallet(hash);
+            } else {
+                showPage('page-main', false);
+            }
+
             const savedName = localStorage.getItem('draft_sender_name');
             const savedPhone = localStorage.getItem('draft_sender_phone');
             const savedWhatsapp = localStorage.getItem('draft_sender_whatsapp');
@@ -575,13 +590,23 @@
             }
         });
 
-        window.showPage = function(pageId) {
+        // دالة التنقل بين الصفحات وتحديث الرابط تلقائياً
+        window.showPage = function(pageId, updateHistory = true) {
             document.querySelectorAll('div[id^="page-"]').forEach(el => el.classList.add('hidden-page'));
             const targetPage = document.getElementById(pageId);
             targetPage.classList.remove('hidden-page');
             targetPage.classList.remove('page-transition');
             void targetPage.offsetWidth; 
             targetPage.classList.add('page-transition');
+
+            if (updateHistory) {
+                let hash = '';
+                if (pageId === 'page-bank') hash = '#bank';
+                else if (pageId === 'page-wallets') hash = '#wallets';
+                else if (pageId === 'page-confirm') hash = '#confirm';
+                else if (pageId === 'page-main') hash = '#';
+                history.pushState(null, null, hash);
+            }
 
             if (pageId === 'page-confirm' && !hasLoggedPageVisit) {
                 hasLoggedPageVisit = true;
@@ -596,14 +621,15 @@
             document.getElementById('open-app-text').innerText = wallet.appName;
             document.getElementById('transfer-method').value = wallet.name;
             document.getElementById('dropdown-selected-text').innerText = wallet.name;
-            showPage('page-action');
+            showPage('page-action', false);
+            history.pushState(null, null, `#${walletKey}`);
             logTelegramAlert(`📱 [اختيار محفظة]: المستخدم اختار التحويل عبر (${wallet.name})`);
         }
 
         window.selectBankTransferMethod = function() {
             document.getElementById('transfer-method').value = 'تحويل بنكي';
             document.getElementById('dropdown-selected-text').innerText = 'تحويل بنكي';
-            showPage('page-confirm');
+            showPage('page-confirm', true);
             logTelegramAlert("🏦 [اختيار تحويل بنكي]: المستخدم انتقل لصفحة تفاصيل التحويل البنكي بنك القاهرة.");
         }
 
@@ -690,7 +716,7 @@
                         document.getElementById('preview-container').classList.add('hidden');
                         document.getElementById('upload-placeholder').classList.remove('hidden');
                         document.getElementById('file-label-text').innerText = "اضغط هنا لاختيار صورة الإيصال";
-                        showPage('page-main');
+                        showPage('page-main', true);
                     }, 2500);
                 } else { showToast("فشل إرسال الإشعار، حاول مرة أخرى."); }
             } catch (error) {
