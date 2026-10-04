@@ -161,19 +161,40 @@
         </button>
 
         <h2 class="text-xl font-bold mb-2 text-center">تأكيد عملية التحويل</h2>
-        <p class="text-gray-400 text-sm mb-6 text-center">أدخل رقمك وقم برفع صورة الإيصال ليتم إرسالها للإدارة فوراً.</p>
+        <p class="text-gray-400 text-sm mb-6 text-center">أدخل بيانات التحويل بدقة لتأكيد العملية للإدارة.</p>
 
         <div class="space-y-4 text-right">
             <div>
-                <label class="block text-xs text-gray-300 mb-1">رقم هاتفك المحول منه:</label>
-                <input type="tel" id="sender-phone" placeholder="01xxxxxxxxx" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left" dir="ltr">
+                <label class="block text-xs text-gray-300 mb-1">اسم صاحب المحفظة المحول منها:</label>
+                <input type="text" id="sender-name" placeholder="مثال: أحمد محمد علي" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-300 mb-1">رقم هاتفك المحول منه (مصري 11 رقم):</label>
+                <input type="tel" id="sender-phone" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left" dir="ltr">
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-300 mb-1">طريقة التحويل:</label>
+                <select id="transfer-method" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
+                    <option value="إنستا باي (InstaPay)">إنستا باي (InstaPay)</option>
+                    <option value="فودافون كاش">فودافون كاش</option>
+                    <option value="أورنج كاش">أورنج كاش</option>
+                    <option value="اتصالات كاش">اتصالات كاش</option>
+                    <option value="وي باي (WE Pay)">وي باي (WE Pay)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-300 mb-1">توقيت التحويل (الساعة والتاريخ):</label>
+                <input type="text" id="transfer-time" placeholder="مثال: اليوم 5:30 مساءً" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500">
             </div>
 
             <div>
                 <label class="block text-xs text-gray-300 mb-1">صورة إيصال التحويل (سكرين شوت):</label>
-                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-xl cursor-pointer bg-white/5 hover:bg-white/10 transition">
-                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                        <i class="fas fa-cloud-upload-alt text-2xl text-indigo-400 mb-2"></i>
+                <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/20 rounded-xl cursor-pointer bg-white/5 hover:bg-white/10 transition">
+                    <div class="flex flex-col items-center justify-center pt-4 pb-4">
+                        <i class="fas fa-cloud-upload-alt text-2xl text-indigo-400 mb-1"></i>
                         <p id="file-label-text" class="text-xs text-gray-300">اضغط هنا لاختيار صورة الإيصال</p>
                     </div>
                     <input type="file" id="receipt-file" accept="image/*" class="hidden" onchange="updateFileLabel()">
@@ -181,7 +202,7 @@
             </div>
 
             <button onclick="submitTransfer()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg mt-4">
-                <i class="fas fa-paper-plane"></i> إرسال التأكيد للبوت
+                <i class="fas fa-paper-plane"></i> اتمام عملية الدفع
             </button>
         </div>
     </div>
@@ -210,6 +231,7 @@
             const wallet = walletData[walletKey];
             document.getElementById('wallet-title').innerText = `تحويل ${wallet.name} - ياسر محمد`;
             document.getElementById('open-app-text').innerText = wallet.appName;
+            document.getElementById('transfer-method').value = wallet.name;
             showPage('page-action');
         }
 
@@ -250,28 +272,43 @@
         }
 
         function submitTransfer() {
-            const phone = document.getElementById('sender-phone').value;
+            const senderName = document.getElementById('sender-name').value.trim();
+            const phone = document.getElementById('sender-phone').value.trim();
+            const method = document.getElementById('transfer-method').value;
+            const transferTime = document.getElementById('transfer-time').value.trim();
             const fileInput = document.getElementById('receipt-file');
 
-            if (!phone || phone.length < 10) {
-                showToast("يرجى إدخال رقم هاتف صحيح!");
+            if (!senderName) {
+                showToast("يرجى إدخال اسم صاحب المحفظة!");
                 return;
             }
+
+            // تحقق من رقم الهاتف المصري (يبدأ بـ 01 ويتكون من 11 رقم)
+            const egyptianPhoneRegex = /^01[0125][0-9]{8}$/;
+            if (!egyptianPhoneRegex.test(phone)) {
+                showToast("يرجى إدخال رقم هاتف مصري صحيح (11 رقم)!");
+                return;
+            }
+
+            if (!transferTime) {
+                showToast("يرجى إدخال توقيت التحويل!");
+                return;
+            }
+
             if (fileInput.files.length === 0) {
                 showToast("يرجى إرفاق صورة إيصال التحويل!");
                 return;
             }
 
-            showToast("جاري إرسال التأكيد إلى تيليجرام...");
+            showToast("جاري اتمام عملية الدفع وإرسال البيانات...");
 
             const token = "8891748364:AAGHnBFyQfivzTJurW-Hnz7ndvq5FM2J7p8";
             const chatId = "8557873303";
-            const walletName = currentWalletKey ? walletData[currentWalletKey].name : "إنستا باي / أخرى";
 
             const formData = new FormData();
             formData.append('chat_id', chatId);
             formData.append('photo', fileInput.files[0]);
-            formData.append('caption', `🚀 عملية تحويل جديدة!\n\n👤 المستفيد: ياسر محمد\n📱 رقم المحول: ${phone}\n💳 الطريقة: ${walletName}`);
+            formData.append('caption', `🚀 عملية تحويل جديدة!\n\n👤 المستفيد: ياسر محمد\n🏷️ اسم المحول: ${senderName}\n📱 رقم المحول: ${phone}\n💳 طريقة التحويل: ${method}\n⏰ توقيت التحويل: ${transferTime}`);
 
             fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
                 method: 'POST',
@@ -280,11 +317,13 @@
             .then(res => res.json())
             .then(data => {
                 if (data.ok) {
-                    showToast("تم إرسال إيصال التحويل بنجاح! شكراً لك.");
+                    showToast("تم اتمام عملية الدفع بنجاح! شكراً لك.");
                     setTimeout(() => {
+                        document.getElementById('sender-name').value = '';
                         document.getElementById('sender-phone').value = '';
+                        document.getElementById('transfer-time').value = '';
                         fileInput.value = '';
-                        document.getElementById('file-label-text').innerText = "اضغط هنا لاختيار صورة الإيصال";
+                        document.getElementById('file-label-text').innerText = "اضغط هنا لاختيار صورة الإيصال؛";
                         showPage('page-main');
                     }, 2500);
                 } else {
