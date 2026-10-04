@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوابة الدفع - ياسر محمد</title>
-    <!-- هنا أضفنا أيقونة المحفظة فوق في المتصفح -->
     <link rel="icon" type="image/png" href="images/instapay.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,7 +24,7 @@
 <body class="flex items-center justify-center p-4">
 
     <!-- الإشعار المنبثق -->
-    <div id="toast">تم النسخ بنجاح!</div>
+    <div id="toast">تم بنجاح!</div>
 
     <!-- الصفحة الأولى: الرئيسية -->
     <div id="page-main" class="glass-panel w-full max-w-md p-8 text-center fade-in">
@@ -66,6 +65,13 @@
                 <i class="fas fa-chevron-left text-gray-400"></i>
             </div>
         </div>
+
+        <!-- زر تأكيد التحويل المباشر -->
+        <div class="mt-6">
+            <button onclick="showPage('page-confirm')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+                <i class="fas fa-check-circle"></i> أنا حولت، أكد التحويل 🚀
+            </button>
+        </div>
     </div>
 
     <!-- الصفحة الثانية: اختيار المحفظة -->
@@ -77,28 +83,24 @@
         <h2 class="text-xl font-bold mb-6 text-center">اختر المحفظة للتحويل</h2>
 
         <div class="grid grid-cols-2 gap-4">
-            <!-- فودافون كاش -->
             <div onclick="selectWallet('vodafone')" class="btn-hover bg-white/5 border border-red-500/30 p-4 rounded-xl text-center cursor-pointer flex flex-col items-center justify-center">
                 <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow">
                     <img src="images/vodafone.png" alt="Vodafone Cash" class="w-full h-full object-contain">
                 </div>
                 <h3 class="font-bold text-xs text-red-400">فودافون كاش</h3>
             </div>
-            <!-- أورنج كاش -->
             <div onclick="selectWallet('orange')" class="btn-hover bg-white/5 border border-orange-500/30 p-4 rounded-xl text-center cursor-pointer flex flex-col items-center justify-center">
                 <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow">
                     <img src="images/orange.png" alt="Orange Cash" class="w-full h-full object-contain">
                 </div>
                 <h3 class="font-bold text-xs text-orange-400">أورنج كاش</h3>
             </div>
-            <!-- اتصالات كاش -->
             <div onclick="selectWallet('etisalat')" class="btn-hover bg-white/5 border border-green-500/30 p-4 rounded-xl text-center cursor-pointer flex flex-col items-center justify-center">
                 <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow">
                     <img src="images/etisalat.png" alt="Etisalat Cash" class="w-full h-full object-contain">
                 </div>
                 <h3 class="font-bold text-xs text-green-400">اتصالات كاش</h3>
             </div>
-            <!-- وي باي -->
             <div onclick="selectWallet('we')" class="btn-hover bg-white/5 border border-purple-500/30 p-4 rounded-xl text-center cursor-pointer flex flex-col items-center justify-center">
                 <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow">
                     <img src="images/we.png" alt="WE Pay" class="w-full h-full object-contain">
@@ -122,17 +124,14 @@
         <p class="text-gray-400 text-sm mb-6">اختر الطريقة المفضلة لديك للتحويل</p>
 
         <div class="space-y-3">
-            <!-- زر فتح تطبيق المحفظة -->
             <button onclick="openWalletApp()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:opacity-95 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
                 <i class="fas fa-external-link-alt"></i> <span id="open-app-text">فتح التطبيق</span>
             </button>
 
-            <!-- زر طلب كود الاتصال السريع USSD -->
             <button onclick="openDialer()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
                 <i class="fas fa-phone-alt"></i> طلب كود الاتصال السريع (USSD)
             </button>
 
-            <!-- زر نسخ الرقم منفصلاً -->
             <button onclick="copyNumber('01003013765')" class="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-xl transition border border-white/10 flex items-center justify-center gap-2">
                 <i class="far fa-copy"></i> نسخ رقم المحفظة (01003013765)
             </button>
@@ -147,34 +146,52 @@
                 </button>
             </div>
         </div>
+
+        <div class="mt-4">
+            <button onclick="showPage('page-confirm')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                <i class="fas fa-check-circle"></i> أنا حولت، أكد التحويل 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- الصفحة الرابعة: تأكيد التحويل ورفع الإيصال -->
+    <div id="page-confirm" class="hidden-page glass-panel w-full max-w-md p-8 fade-in">
+        <button onclick="showPage('page-main')" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
+            <i class="fas fa-arrow-right"></i> رجوع للرئيسية
+        </button>
+
+        <h2 class="text-xl font-bold mb-2 text-center">تأكيد عملية التحويل</h2>
+        <p class="text-gray-400 text-sm mb-6 text-center">أدخل رقمك وقم برفع صورة الإيصال ليتم إرسالها للإدارة فوراً.</p>
+
+        <div class="space-y-4 text-right">
+            <div>
+                <label class="block text-xs text-gray-300 mb-1">رقم هاتفك المحول منه:</label>
+                <input type="tel" id="sender-phone" placeholder="01xxxxxxxxx" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left" dir="ltr">
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-300 mb-1">صورة إيصال التحويل (سكرين شوت):</label>
+                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-xl cursor-pointer bg-white/5 hover:bg-white/10 transition">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <i class="fas fa-cloud-upload-alt text-2xl text-indigo-400 mb-2"></i>
+                        <p id="file-label-text" class="text-xs text-gray-300">اضغط هنا لاختيار صورة الإيصال</p>
+                    </div>
+                    <input type="file" id="receipt-file" accept="image/*" class="hidden" onchange="updateFileLabel()">
+                </label>
+            </div>
+
+            <button onclick="submitTransfer()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg mt-4">
+                <i class="fas fa-paper-plane"></i> إرسال التأكيد للبوت
+            </button>
+        </div>
     </div>
 
     <script>
         const walletData = {
-            vodafone: {
-                name: "فودافون كاش",
-                appName: "فتح تطبيق فودافون كاش",
-                link: "http://vf.eg/vfcash?id=mt&qrId=Mfason",
-                ussd: "*9*7*01003013765#"
-            },
-            orange: {
-                name: "أورنج كاش",
-                appName: "فتح تطبيق أورنج كاش (Max it)",
-                link: "https://www.orange.eg/ar/services/orange-financial-services", 
-                ussd: "*115*01003013765#"
-            },
-            etisalat: {
-                name: "اتصالات كاش",
-                appName: "فتح تطبيق اتصالات كاش (e& money)",
-                link: "https://app.etisalat.eg/", 
-                ussd: "*777*01003013765#"
-            },
-            we: {
-                name: "وي باي (WE Pay)",
-                appName: "فتح تطبيق وي باي (WE Pay)",
-                link: "https://te.eg/personal/we-pay", 
-                ussd: "*322*01003013765#"
-            }
+            vodafone: { name: "فودافون كاش", appName: "فتح تطبيق فودافون كاش", link: "http://vf.eg/vfcash?id=mt&qrId=Mfason", ussd: "*9*7*01003013765#" },
+            orange: { name: "أورنج كاش", appName: "فتح تطبيق أورنج كاش (Max it)", link: "https://www.orange.eg/ar/services/orange-financial-services", ussd: "*115*01003013765#" },
+            etisalat: { name: "اتصالات كاش", appName: "فتح تطبيق اتصالات كاش (e& money)", link: "https://app.etisalat.eg/", ussd: "*777*01003013765#" },
+            we: { name: "وي باي (WE Pay)", appName: "فتح تطبيق وي باي (WE Pay)", link: "https://te.eg/personal/we-pay", ussd: "*322*01003013765#" }
         };
 
         let currentWalletKey = '';
@@ -191,49 +208,92 @@
         function selectWallet(walletKey) {
             currentWalletKey = walletKey;
             const wallet = walletData[walletKey];
-            
             document.getElementById('wallet-title').innerText = `تحويل ${wallet.name} - ياسر محمد`;
             document.getElementById('open-app-text').innerText = wallet.appName;
-            
             showPage('page-action');
         }
 
         function openWalletApp() {
             const wallet = walletData[currentWalletKey];
-            
             navigator.clipboard.writeText("01003013765").then(() => {
-                showToast(`تم نسخ رقمك تلقائياً، جاري فتح ${wallet.name}...`);
-            }).catch(err => {
-                console.log("Clipboard failed", err);
+                showToast(`تم نسخ رقمك، جاري فتح ${wallet.name}...`);
             });
-
             if (wallet && wallet.link) {
-                setTimeout(() => {
-                    window.open(wallet.link, '_blank');
-                }, 300);
+                setTimeout(() => { window.open(wallet.link, '_blank'); }, 300);
             }
         }
 
         function openDialer() {
             const wallet = walletData[currentWalletKey];
-            
             navigator.clipboard.writeText("01003013765").then(() => {
-                showToast("تم نسخ الرقم وتفعيل كود الاتصال السريع!");
-            }).catch(err => {
-                console.log("Clipboard failed", err);
+                showToast("تم نسخ الرقم وتفعيل كود الاتصال!");
             });
-
             if (wallet && wallet.ussd) {
                 const ussdCode = wallet.ussd.replace('#', '%23');
-                setTimeout(() => {
-                    window.location.href = `tel:${ussdCode}`;
-                }, 300);
+                setTimeout(() => { window.location.href = `tel:${ussdCode}`; }, 300);
             }
         }
 
         function copyNumber(number) {
             navigator.clipboard.writeText(number).then(() => {
                 showToast("تم نسخ الرقم بنجاح!");
+            });
+        }
+
+        function updateFileLabel() {
+            const fileInput = document.getElementById('receipt-file');
+            const labelText = document.getElementById('file-label-text');
+            if (fileInput.files.length > 0) {
+                labelText.innerText = "تم اختيار: " + fileInput.files[0].name;
+                labelText.classList.add("text-emerald-400", "font-bold");
+            }
+        }
+
+        function submitTransfer() {
+            const phone = document.getElementById('sender-phone').value;
+            const fileInput = document.getElementById('receipt-file');
+
+            if (!phone || phone.length < 10) {
+                showToast("يرجى إدخال رقم هاتف صحيح!");
+                return;
+            }
+            if (fileInput.files.length === 0) {
+                showToast("يرجى إرفاق صورة إيصال التحويل!");
+                return;
+            }
+
+            showToast("جاري إرسال التأكيد إلى تيليجرام...");
+
+            const token = "8891748364:AAGHnBFyQfivzTJurW-Hnz7ndvq5FM2J7p8";
+            const chatId = "8557873303";
+            const walletName = currentWalletKey ? walletData[currentWalletKey].name : "إنستا باي / أخرى";
+
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('photo', fileInput.files[0]);
+            formData.append('caption', `🚀 عملية تحويل جديدة!\n\n👤 المستفيد: ياسر محمد\n📱 رقم المحول: ${phone}\n💳 الطريقة: ${walletName}`);
+
+            fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok) {
+                    showToast("تم إرسال إيصال التحويل بنجاح! شكراً لك.");
+                    setTimeout(() => {
+                        document.getElementById('sender-phone').value = '';
+                        fileInput.value = '';
+                        document.getElementById('file-label-text').innerText = "اضغط هنا لاختيار صورة الإيصال";
+                        showPage('page-main');
+                    }, 2500);
+                } else {
+                    showToast("فشل الإرسال، حاول مرة أخرى.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToast("خطأ في الاتصال بالإنترنت.");
             });
         }
 
