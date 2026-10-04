@@ -22,6 +22,57 @@
     <!-- الإشعار المنبثق -->
     <div id="toast">تم بنجاح!</div>
 
+    <!-- أيقونة الدردشة العائمة في أسفل الشاشة -->
+    <div onclick="toggleChatModal()" class="fixed bottom-6 left-6 z-50 w-14 h-14 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-full flex items-center justify-center text-white shadow-2xl cursor-pointer hover:scale-110 transition-transform duration-300 group">
+        <i class="fas fa-comment-dots text-2xl group-hover:rotate-12 transition-transform"></i>
+        <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#090d16] animate-pulse"></span>
+    </div>
+
+    <!-- نافذة الدردشة والدعم الفني المنبثقة -->
+    <div id="chat-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 page-transition">
+        <div class="glass-panel w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto">
+            <!-- زر الإغلاق -->
+            <button onclick="toggleChatModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white transition">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-2xl mx-auto flex items-center justify-center mb-3 text-white shadow-lg shadow-indigo-500/30">
+                    <i class="fas fa-headset text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold">الدعم الفني والرسائل</h3>
+                <p class="text-xs text-gray-400 mt-1">واجهتك مشكلة أو استفسار؟ اترك بياناتك وسنرد عليك فوراً</p>
+            </div>
+
+            <div class="space-y-3.5 text-right">
+                <div>
+                    <label class="block text-xs text-gray-300 mb-1">الاسم:</label>
+                    <input type="text" id="support-name" placeholder="أدخل اسمك الكريم" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-300 mb-1">البريد الإلكتروني:</label>
+                    <input type="email" id="support-email" placeholder="example@domain.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left transition" dir="ltr">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-300 mb-1">رقم التليفون (11 رقم):</label>
+                    <input type="tel" id="support-phone" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left transition" dir="ltr">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-300 mb-1">سبب المشكلة:</label>
+                    <input type="text" id="support-reason" placeholder="مثال: مشكلة في تأكيد التحويل أو استفسار" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-300 mb-1">المشكلة بالتفصيل:</label>
+                    <textarea id="support-details" rows="3" placeholder="اكتب تفاصيل مشكلتك هنا..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
+                </div>
+
+                <button onclick="submitSupportTicket()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 mt-2 text-sm">
+                    <i class="fas fa-paper-plane"></i> إرسال الاستفسار
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- الصفحة الأولى: الرئيسية (اختر طريقة الدفع) -->
     <div id="page-main" class="glass-panel w-full max-w-md p-8 text-center page-transition">
         <div class="mb-6">
@@ -233,16 +284,42 @@
                 <input type="tel" id="sender-whatsapp" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left transition" dir="ltr">
             </div>
 
-            <div>
+            <!-- قائمة المداولة المخصصة (Custom Dropdown) -->
+            <div class="relative">
                 <label class="block text-xs text-gray-300 mb-1">طريقة التحويل:</label>
-                <select id="transfer-method" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition">
-                    <option value="إنستا باي (InstaPay)">إنستا باي (InstaPay)</option>
-                    <option value="تحويل بنكي">تحويل بنكي</option>
-                    <option value="فودافون كاش">فودافون كاش</option>
-                    <option value="أورنج كاش">أورنج كاش</option>
-                    <option value="اتصالات كاش">اتصالات كاش</option>
-                    <option value="وي باي (WE Pay)">وي باي (WE Pay)</option>
-                </select>
+                <input type="hidden" id="transfer-method" value="إنستا باي (InstaPay)">
+                
+                <div id="dropdown-btn" onclick="toggleDropdown()" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white flex items-center justify-between cursor-pointer hover:border-indigo-500 transition select-none">
+                    <span id="dropdown-selected-text">إنستا باي (InstaPay)</span>
+                    <i class="fas fa-chevron-down text-gray-400 transition-transform duration-300" id="dropdown-arrow"></i>
+                </div>
+
+                <div id="dropdown-menu" class="hidden absolute top-full left-0 right-0 mt-2 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden page-transition">
+                    <div onclick="selectCustomOption('إنستا باي (InstaPay)')" class="px-4 py-3 hover:bg-white/10 cursor-pointer text-right transition text-sm flex items-center justify-between border-b border-white/5">
+                        <span>إنستا باي (InstaPay)</span>
+                        <i class="fas fa-check text-emerald-400"></i>
+                    </div>
+                    <div onclick="selectCustomOption('تحويل بنكي')" class="px-4 py-3 hover:bg-white/10 cursor-pointer text-right transition text-sm flex items-center justify-between border-b border-white/5">
+                        <span>تحويل بنكي</span>
+                        <i class="fas fa-check text-emerald-400"></i>
+                    </div>
+                    <div onclick="selectCustomOption('فودافون كاش')" class="px-4 py-3 hover:bg-white/10 cursor-pointer text-right transition text-sm flex items-center justify-between border-b border-white/5">
+                        <span>فودافون كاش</span>
+                        <i class="fas fa-check text-emerald-400"></i>
+                    </div>
+                    <div onclick="selectCustomOption('أورنج كاش')" class="px-4 py-3 hover:bg-white/10 cursor-pointer text-right transition text-sm flex items-center justify-between border-b border-white/5">
+                        <span>أورنج كاش</span>
+                        <i class="fas fa-check text-emerald-400"></i>
+                    </div>
+                    <div onclick="selectCustomOption('اتصالات كاش')" class="px-4 py-3 hover:bg-white/10 cursor-pointer text-right transition text-sm flex items-center justify-between border-b border-white/5">
+                        <span>اتصالات كاش</span>
+                        <i class="fas fa-check text-emerald-400"></i>
+                    </div>
+                    <div onclick="selectCustomOption('وي باي (WE Pay)')" class="px-4 py-3 hover:bg-white/10 cursor-pointer text-right transition text-sm flex items-center justify-between">
+                        <span>وي باي (WE Pay)</span>
+                        <i class="fas fa-check text-emerald-400"></i>
+                    </div>
+                </div>
             </div>
 
             <div>
