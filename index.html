@@ -20,21 +20,13 @@
         #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; }
         .show-toast { top: 20px !important; }
     </style>
-    <!-- استدعاء مكتبة Gemini API -->
-    <script type="importmap">
-      {
-        "imports": {
-          "@google/genai": "https://esm.run/@google/genai"
-        }
-      }
-    </script>
 </head>
 <body class="flex items-center justify-center p-4">
 
     <!-- الإشعار المنبثق -->
     <div id="toast">تم بنجاح!</div>
 
-    <!-- الصفحة الأولى: الرئيسية -->
+    <!-- الصفحة الأولى: الرئيسية (اختر طريقة الدفع) -->
     <div id="page-main" class="glass-panel w-full max-w-md p-8 text-center fade-in">
         <div class="mb-6">
             <div class="w-20 h-20 bg-indigo-500 rounded-full mx-auto flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/30">
@@ -44,7 +36,12 @@
             <p class="text-gray-300 text-sm bg-white/10 inline-block px-4 py-1 rounded-full mt-2">الدفع لـ: <span class="font-bold text-white">ياسر محمد</span></p>
         </div>
 
-        <div class="space-y-4 mt-8">
+        <div class="mb-3 text-right">
+            <h2 class="text-sm font-semibold text-gray-300 px-1">اختر طريقة الدفع:</h2>
+        </div>
+
+        <div class="space-y-3.5">
+            <!-- إنستا باي -->
             <a href="https://ipn.eg/S/mohamed1c/instapay/31DvFy" target="_blank" onclick="logTelegramAlert('🔗 [رابط مباشر]: ضغط العميل على رابط إنستاباي مباشر')" class="btn-hover flex items-center justify-between w-full p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 shadow">
@@ -58,6 +55,21 @@
                 <i class="fas fa-chevron-left text-gray-400"></i>
             </a>
 
+            <!-- التحويل البنكي -->
+            <div onclick="showPage('page-bank')" class="btn-hover flex items-center justify-between w-full p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center p-2 shadow">
+                        <i class="fas fa-university text-2xl text-white"></i>
+                    </div>
+                    <div class="text-right">
+                        <h2 class="font-bold text-lg">تحويل بنكي</h2>
+                        <p class="text-xs text-gray-400">حساب بنكي مباشر (بنك القاهرة)</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-left text-gray-400"></i>
+            </div>
+
+            <!-- المحافظ الإلكترونية -->
             <div onclick="showPage('page-wallets')" class="btn-hover flex items-center justify-between w-full p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center p-2 shadow">
@@ -79,7 +91,49 @@
         </div>
     </div>
 
-    <!-- الصفحة الثانية: اختيار المحفظة -->
+    <!-- صفحة تفاصيل التحويل البنكي -->
+    <div id="page-bank" class="hidden-page glass-panel w-full max-w-md p-8 fade-in">
+        <button onclick="showPage('page-main')" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
+            <i class="fas fa-arrow-right"></i> رجوع
+        </button>
+        
+        <h2 class="text-xl font-bold mb-2 text-center">تفاصيل التحويل البنكي</h2>
+        <p class="text-gray-400 text-xs mb-6 text-center">قم بالتحويل على بيانات الحساب أدناه، ثم اضغط على زر التأكيد.</p>
+
+        <!-- تنويه عدم استخدام إنستا باي -->
+        <div class="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-300 text-xs text-center flex items-center gap-2 justify-center">
+            <i class="fas fa-exclamation-triangle text-amber-400 text-sm"></i>
+            <span>تنبيه: لا يمكن استخدام هذه البيانات للتحويل من تطبيق إنستا باي.</span>
+        </div>
+
+        <div class="space-y-4 text-right bg-black/30 p-4 rounded-xl border border-white/5">
+            <div>
+                <p class="text-xs text-gray-400">اسم صاحب الحساب:</p>
+                <p class="font-bold text-white text-xs leading-relaxed">Yasser Mohamed Kamal Elsayed Ahmed Elmokadem</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400">اسم البنك:</p>
+                <p class="font-bold text-white text-sm">بنك القاهرة</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400">رقم الحساب البنكي:</p>
+                <div class="flex items-center justify-between mt-1 bg-white/5 p-2.5 rounded-lg border border-white/10">
+                    <span class="font-mono text-green-400 font-bold tracking-wider text-xs" id="bank-acc">7071006270177161</span>
+                    <button onclick="copyBankInfo('7071006270177161', 'رقم الحساب')" class="text-indigo-400 hover:text-indigo-300 text-xs flex items-center gap-1 bg-white/10 px-2.5 py-1 rounded">
+                        <i class="far fa-copy"></i> نسخ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <button onclick="selectBankTransferMethod()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+                <i class="fas fa-check-circle"></i> أنا حولت، أكد التحويل 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- الصفحة الثانية: اختيار المحفظة الإلكترونية -->
     <div id="page-wallets" class="hidden-page glass-panel w-full max-w-md p-8 fade-in">
         <button onclick="showPage('page-main')" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
             <i class="fas fa-arrow-right"></i> رجوع
@@ -115,7 +169,7 @@
         </div>
     </div>
 
-    <!-- الصفحة الثالثة: خيارات التطبيق -->
+    <!-- الصفحة الثالثة: خيارات التطبيق للمحافظ -->
     <div id="page-action" class="hidden-page glass-panel w-full max-w-md p-8 text-center fade-in">
         <button onclick="showPage('page-wallets')" class="text-gray-400 hover:text-white mb-4 flex items-center gap-2 transition">
             <i class="fas fa-arrow-right"></i> رجوع
@@ -170,7 +224,7 @@
 
         <div class="space-y-4 text-right">
             <div>
-                <label class="block text-xs text-gray-300 mb-1">اسم صاحب المحفظة المحول منها:</label>
+                <label class="block text-xs text-gray-300 mb-1">اسم صاحب الحساب أو المحفظة المحول منه:</label>
                 <input type="text" id="sender-name" placeholder="مثال: أحمد محمد علي" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500">
             </div>
 
@@ -188,6 +242,7 @@
                 <label class="block text-xs text-gray-300 mb-1">طريقة التحويل:</label>
                 <select id="transfer-method" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
                     <option value="إنستا باي (InstaPay)">إنستا باي (InstaPay)</option>
+                    <option value="تحويل بنكي">تحويل بنكي</option>
                     <option value="فودافون كاش">فودافون كاش</option>
                     <option value="أورنج كاش">أورنج كاش</option>
                     <option value="اتصالات كاش">اتصالات كاش</option>
@@ -211,18 +266,13 @@
                 </label>
             </div>
 
-            <button onclick="verifyAndSubmitWithGemini()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg mt-2">
+            <button onclick="submitWithoutAI()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg mt-2">
                 <i class="fas fa-check-circle"></i> تأكيد وإرسال التحويل
             </button>
         </div>
     </div>
 
-    <script type="module">
-        import { GoogleGenAI } from "@google/genai";
-
-        const GEMINI_API_KEY = "AQ.Ab8RN6I9Z0ZMEnro12StvZY099y9BqUn_L0HIUrsUFvPl9K-PQ"; 
-        const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-        
+    <script>
         const BOT_TOKEN = "8891748364:AAGHnBFyQfivzTJurW-Hnz7ndvq5FM2J7p8";
         const CHAT_ID = "8557873303";
 
@@ -304,6 +354,19 @@
             logTelegramAlert(`📱 [اختيار محفظة]: المستخدم اختار التحويل عبر (${wallet.name})`);
         }
 
+        window.selectBankTransferMethod = function() {
+            document.getElementById('transfer-method').value = 'تحويل بنكي';
+            showPage('page-confirm');
+            logTelegramAlert("🏦 [اختيار تحويل بنكي]: المستخدم انتقل لصفحة تفاصيل التحويل البنكي.");
+        }
+
+        window.copyBankInfo = function(text, label) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`تم نسخ ${label} بنجاح!`);
+            });
+            logTelegramAlert(`📋 [نسخ بيانات بنكية]: قام المستخدم بنسخ (${label})`);
+        }
+
         window.openWalletApp = function() {
             const wallet = walletData[currentWalletKey];
             navigator.clipboard.writeText("01003013765").then(() => {
@@ -342,20 +405,6 @@
             }
         }
 
-        function fileToGenerativePart(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    const base64Data = reader.result.split(',')[1];
-                    resolve({
-                        inlineData: { data: base64Data, mimeType: file.type }
-                    });
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
         async function logTelegramAlert(messageText) {
             try {
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -368,7 +417,7 @@
             }
         }
 
-        window.verifyAndSubmitWithGemini = async function() {
+        window.submitWithoutAI = async function() {
             const senderName = document.getElementById('sender-name').value.trim();
             const phone = document.getElementById('sender-phone').value.trim();
             const whatsapp = document.getElementById('sender-whatsapp').value.trim();
@@ -377,7 +426,7 @@
             const fileInput = document.getElementById('receipt-file');
 
             if (!senderName) {
-                showToast("يرجى إدخال اسم صاحب المحفظة!");
+                showToast("يرجى إدخال اسم صاحب الحساب أو المحفظة!");
                 return;
             }
 
@@ -403,39 +452,13 @@
                 return;
             }
 
-            showToast("🔍 جاري التحقق من الإيصال...");
+            showToast("🚀 جاري إرسال الإشعار والتفاصيل...");
 
             try {
-                const imagePart = await fileToGenerativePart(fileInput.files[0]);
-                
-                // تم تصحيح اسم الموديل إلى gemini-2.0-flash لضمان استقرار الطلب وعدم حدوث أخطاء
-                const response = await ai.models.generateContent({
-                    model: 'gemini-2.0-flash',
-                    contents: [
-                        imagePart,
-                        `هل هذه الصورة تعتبر إيصال تحويل أموال حقيقي؟ أجب بكلمة واحدة فقط: نعم أو لا.`
-                    ]
-                });
-
-                const aiResult = response.text ? response.text.trim() : "";
-
-                if (aiResult.includes("لا")) {
-                    showToast("❌ عذراً، الإيصال مرفوض! يرجى التأكد من رفع إيصال صحيح.");
-
-                    const errorFormData = new FormData();
-                    errorFormData.append('chat_id', CHAT_ID);
-                    errorFormData.append('photo', fileInput.files[0]);
-                    errorFormData.append('caption', `⚠ [تنبيه - إيصال مرفوض/خاطئ]\n🚨 حاول العميل إرسال صورة غير صحيحة!\n\n👤 اسم العميل: ${senderName}\n📱 الهاتف المحول منه: ${phone}\n💬 واتساب العميل: ${whatsapp}\n💳 الطريقة: ${method}`);
-                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: errorFormData });
-                    return;
-                }
-
-                showToast("✅ تم التحقق بنجاح! جاري إرسال الإشعار النهائي لتليجرام...");
-
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
                 formData.append('photo', fileInput.files[0]);
-                formData.append('caption', `🛡️ [تأكيد الدفع النهائي - تم التحقيق]\n🚀 عملية تحويل ناجحة وموثوقة!\n\n👤 المستفيد: ياسر محمد\n🏷️ اسم المحول: ${senderName}\n📱 هاتف التحويل: ${phone}\n💬 واتساب العميل: ${whatsapp}\n💳 طريقة التحويل: ${method}\n⏰ توقيت التحويل: ${transferTime}`);
+                formData.append('caption', `🛡️ [تأكيد الدفع النهائي]\n\n👤 المستفيد: ياسر محمد\n🏷️️ اسم المحول: ${senderName}\n📱 هاتف التحويل: ${phone}\n💬 واتساب العميل: ${whatsapp}\n💳 طريقة التحويل: ${method}\n⏰ توقيت التحويل: ${transferTime}`);
 
                 const tgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
                     method: 'POST',
