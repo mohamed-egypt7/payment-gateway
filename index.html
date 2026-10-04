@@ -21,79 +21,104 @@
             position: relative;
         }
 
+        /* خلفية متوهجة متحركة بعمق أكبر */
         .bg-glow {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(147, 51, 234, 0.05) 50%, transparent 80%);
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.2) 0%, rgba(147, 51, 234, 0.08) 40%, transparent 75%);
             z-index: -1;
-            animation: pulseGlow 8s ease-in-out infinite alternate;
+            animation: pulseGlow 6s ease-in-out infinite alternate;
         }
 
         @keyframes pulseGlow {
-            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
-            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.6; }
+            100% { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
         }
 
+        /* تصميم الزجاج الشفاف مع أنيميشن ظهور تدريجي */
         .glass-panel {
             background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 28px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: panelEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
+        @keyframes panelEntrance {
+            0% { opacity: 0; transform: translateY(30px) scale(0.95); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        /* أنيميشن تفاعل الأزرار الحديثة */
         .btn-hover {
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .btn-hover:hover {
-            transform: translateY(-4px) scale(1.02);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-6px) scale(1.03);
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.3);
+        }
+        .btn-hover:active {
+            transform: translateY(-2px) scale(1.01);
         }
 
+        /* أنيميشن انتقال الصفحات بسلاسة تامة */
         .page-transition {
-            animation: pageAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: pageAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes pageAppear {
-            0% { opacity: 0; transform: translateY(25px) scale(0.97); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
+            0% { opacity: 0; transform: scale(0.96) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
 
+        /* أنيميشن الطفو المستمر للأيقونة الكبرى */
         .float-anim {
             animation: floating 4s ease-in-out infinite;
         }
         @keyframes floating {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        /* أنيميشن النبض للإشعارات وأيقونة الشات */
+        @keyframes softPulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+            70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .pulsing-badge {
+            animation: softPulse 2s infinite;
         }
 
         .hidden-page {
             display: none;
         }
 
+        /* الإشعار المنبثق بتصميم فخم */
         #toast {
             position: fixed;
-            top: -100px;
+            top: -120px;
             left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
-            padding: 14px 28px;
+            padding: 16px 32px;
             border-radius: 50px;
             font-weight: 700;
-            box-shadow: 0 15px 30px -5px rgba(16, 185, 129, 0.4);
-            transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 20px 35px -5px rgba(16, 185, 129, 0.5);
+            transition: top 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             z-index: 1000;
         }
         .show-toast {
-            top: 25px !important;
+            top: 30px !important;
         }
     </style>
 </head>
@@ -102,20 +127,19 @@
     <div class="bg-glow"></div>
     <div id="toast">تم بنجاح!</div>
 
-    <!-- أيقونة الدردشة العائمة -->
-    <div onclick="toggleChatModal()" class="fixed bottom-6 left-6 z-50 w-14 h-14 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-full flex items-center justify-center text-white shadow-2xl cursor-pointer hover:scale-110 transition-transform duration-300 group">
-        <i class="fas fa-comment-dots text-2xl group-hover:rotate-12 transition-transform"></i>
-        <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#090d16] animate-pulse"></span>
+    <!-- أيقونة الدردشة العائمة مع أنيميشن نبض مستمر -->
+    <div onclick="toggleChatModal()" class="fixed bottom-6 left-6 z-50 w-16 h-16 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-full flex items-center justify-center text-white shadow-2xl cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group pulsing-badge">
+        <i class="fas fa-comment-dots text-2xl group-hover:rotate-12 transition-transform duration-300"></i>
     </div>
 
-    <!-- نافذة الدردشة والدعم الفني -->
-    <div id="chat-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden items-center justify-center p-4 page-transition">
+    <!-- نافذة الدردشة والدعم الفني المنبثقة -->
+    <div id="chat-modal" class="fixed inset-0 bg-black/75 backdrop-blur-lg z-50 hidden items-center justify-center p-4 page-transition">
         <div class="glass-panel w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="toggleChatModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white transition">
+            <button onclick="toggleChatModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white transition hover:rotate-90 duration-300">
                 <i class="fas fa-times text-xl"></i>
             </button>
             <div class="text-center mb-6">
-                <div class="w-14 h-14 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-2xl mx-auto flex items-center justify-center mb-3 text-white shadow-lg shadow-indigo-500/30">
+                <div class="w-16 h-16 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-2xl mx-auto flex items-center justify-center mb-3 text-white shadow-lg shadow-indigo-500/40 float-anim">
                     <i class="fas fa-headset text-2xl"></i>
                 </div>
                 <h3 class="text-lg font-bold">الدعم الفني والرسائل</h3>
@@ -124,25 +148,25 @@
             <div class="space-y-3.5 text-right">
                 <div>
                     <label class="block text-xs text-gray-300 mb-1">الاسم:</label>
-                    <input type="text" id="support-name" placeholder="أدخل اسمك الكريم" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition">
+                    <input type="text" id="support-name" placeholder="أدخل اسمك الكريم" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition duration-300">
                 </div>
                 <div>
                     <label class="block text-xs text-gray-300 mb-1">البريد الإلكتروني:</label>
-                    <input type="email" id="support-email" placeholder="example@domain.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left transition" dir="ltr">
+                    <input type="email" id="support-email" placeholder="example@domain.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 font-mono text-left transition duration-300" dir="ltr">
                 </div>
                 <div>
                     <label class="block text-xs text-gray-300 mb-1">رقم التليفون (11 رقم):</label>
-                    <input type="tel" id="support-phone" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left transition" dir="ltr">
+                    <input type="tel" id="support-phone" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 font-mono text-left transition duration-300" dir="ltr">
                 </div>
                 <div>
                     <label class="block text-xs text-gray-300 mb-1">سبب المشكلة:</label>
-                    <input type="text" id="support-reason" placeholder="مثال: مشكلة في تأكيد التحويل أو استفسار" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition">
+                    <input type="text" id="support-reason" placeholder="مثال: مشكلة في تأكيد التحويل أو استفسار" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition duration-300">
                 </div>
                 <div>
                     <label class="block text-xs text-gray-300 mb-1">المشكلة بالتفصيل:</label>
-                    <textarea id="support-details" rows="3" placeholder="اكتب تفاصيل مشكلتك هنا..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
+                    <textarea id="support-details" rows="3" placeholder="اكتب تفاصيل مشكلتك هنا..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition duration-300 resize-none"></textarea>
                 </div>
-                <button onclick="submitSupportTicket()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 mt-2 text-sm">
+                <button onclick="submitSupportTicket()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 active:scale-95 text-white font-bold py-3.5 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 mt-2 text-sm">
                     <i class="fas fa-paper-plane"></i> إرسال الاستفسار
                 </button>
             </div>
@@ -152,8 +176,8 @@
     <!-- الصفحة الأولى (الرئيسية) -->
     <div id="page-main" class="hidden-page glass-panel w-full max-w-md p-8 text-center page-transition">
         <div class="mb-6">
-            <div class="w-20 h-20 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-xl shadow-indigo-500/40 float-anim">
-                <i class="fas fa-wallet text-3xl text-white"></i>
+            <div class="w-24 h-24 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-3xl mx-auto flex items-center justify-center mb-4 shadow-2xl shadow-indigo-500/50 float-anim">
+                <i class="fas fa-wallet text-4xl text-white"></i>
             </div>
             <h1 class="text-2xl font-extrabold mb-1 tracking-wide">بوابة الدفع الذكية</h1>
             <p class="text-gray-300 text-sm bg-white/10 inline-block px-4 py-1.5 rounded-full mt-2 border border-white/10">الدفع لـ: <span class="font-bold text-white">ياسر محمد</span></p>
@@ -166,7 +190,7 @@
         <div class="space-y-3.5">
             <a href="https://ipn.eg/S/mohamed1c/instapay/31DvFy" target="_blank" onclick="logTelegramAlert('🔗 [رابط مباشر]: ضغط العميل على رابط إنستاباي مباشر')" class="btn-hover flex items-center justify-between w-full p-4 rounded-2xl border border-white/10 bg-white/5 cursor-pointer">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 shadow-lg">
+                    <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1.5 shadow-lg">
                         <img src="images/instapay.png" alt="InstaPay" class="w-full h-full object-contain">
                     </div>
                     <div class="text-right">
@@ -179,7 +203,7 @@
 
             <div onclick="showPage('page-bank', true)" class="btn-hover flex items-center justify-between w-full p-4 rounded-2xl border border-white/10 bg-white/5 cursor-pointer">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center p-2 shadow-lg">
+                    <div class="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center p-2 shadow-lg">
                         <i class="fas fa-university text-2xl text-white"></i>
                     </div>
                     <div class="text-right">
@@ -192,7 +216,7 @@
 
             <div onclick="showPage('page-wallets', true)" class="btn-hover flex items-center justify-between w-full p-4 rounded-2xl border border-white/10 bg-white/5 cursor-pointer">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center p-2 shadow-lg">
+                    <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl flex items-center justify-center p-2 shadow-lg">
                         <i class="fas fa-mobile-alt text-2xl text-white"></i>
                     </div>
                     <div class="text-right">
@@ -205,7 +229,7 @@
         </div>
 
         <div class="mt-6">
-            <button onclick="showPage('page-confirm', true)" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30">
+            <button onclick="showPage('page-confirm', true)" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 active:scale-95 text-white font-bold py-4 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/40">
                 <i class="fas fa-check-circle"></i> أنا حولت، أكد التحويل 🚀
             </button>
         </div>
@@ -213,7 +237,7 @@
 
     <!-- صفحة التحويل البنكي -->
     <div id="page-bank" class="hidden-page glass-panel w-full max-w-md p-8 page-transition">
-        <button onclick="showPage('page-main', true)" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
+        <button onclick="showPage('page-main', true)" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition hover:-translate-x-1 duration-300">
             <i class="fas fa-arrow-right"></i> رجوع
         </button>
         <h2 class="text-xl font-bold mb-2 text-center">تفاصيل التحويل البنكي</h2>
@@ -237,7 +261,7 @@
                 <p class="text-xs text-gray-400">رقم الحساب البنكي:</p>
                 <div class="flex items-center justify-between mt-1 bg-white/5 p-2.5 rounded-xl border border-white/10">
                     <span class="font-mono text-green-400 font-bold tracking-wider text-xs" id="bank-acc">7071006270177161</span>
-                    <button onclick="copyBankInfo('7071006270177161', 'رقم الحساب')" class="text-indigo-400 hover:text-indigo-300 text-xs flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-lg transition hover:bg-white/20">
+                    <button onclick="copyBankInfo('7071006270177161', 'رقم الحساب')" class="text-indigo-400 hover:text-indigo-300 text-xs flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-lg transition hover:bg-white/20 active:scale-95">
                         <i class="far fa-copy"></i> نسخ
                     </button>
                 </div>
@@ -245,7 +269,7 @@
         </div>
 
         <div class="mt-6">
-            <button onclick="selectBankTransferMethod()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold py-3.5 rounded-2xl transition shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2">
+            <button onclick="selectBankTransferMethod()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 active:scale-95 text-white font-bold py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-emerald-600/40 flex items-center justify-center gap-2">
                 <i class="fas fa-check-circle"></i> أنا حولت، أكد التحويل 🚀
             </button>
         </div>
@@ -253,31 +277,31 @@
 
     <!-- صفحة المحافظ الإلكترونية -->
     <div id="page-wallets" class="hidden-page glass-panel w-full max-w-md p-8 page-transition">
-        <button onclick="showPage('page-main', true)" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
+        <button onclick="showPage('page-main', true)" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition hover:-translate-x-1 duration-300">
             <i class="fas fa-arrow-right"></i> رجوع
         </button>
         <h2 class="text-xl font-bold mb-6 text-center">اختر المحفظة للتحويل</h2>
         <div class="grid grid-cols-2 gap-4">
             <div onclick="selectWallet('vodafone')" class="btn-hover bg-white/5 border border-red-500/30 p-4 rounded-2xl text-center cursor-pointer flex flex-col items-center justify-center">
-                <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow-lg">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1.5 mb-2 shadow-lg">
                     <img src="images/vodafone.png" alt="Vodafone" class="w-full h-full object-contain">
                 </div>
                 <h3 class="font-bold text-xs text-red-400">فودافون كاش</h3>
             </div>
             <div onclick="selectWallet('orange')" class="btn-hover bg-white/5 border border-orange-500/30 p-4 rounded-2xl text-center cursor-pointer flex flex-col items-center justify-center">
-                <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow-lg">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1.5 mb-2 shadow-lg">
                     <img src="images/orange.png" alt="Orange" class="w-full h-full object-contain">
                 </div>
                 <h3 class="font-bold text-xs text-orange-400">أورنج كاش</h3>
             </div>
             <div onclick="selectWallet('etisalat')" class="btn-hover bg-white/5 border border-green-500/30 p-4 rounded-2xl text-center cursor-pointer flex flex-col items-center justify-center">
-                <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow-lg">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1.5 mb-2 shadow-lg">
                     <img src="images/etisalat.png" alt="Etisalat" class="w-full h-full object-contain">
                 </div>
                 <h3 class="font-bold text-xs text-green-400">اتصالات كاش</h3>
             </div>
             <div onclick="selectWallet('we')" class="btn-hover bg-white/5 border border-purple-500/30 p-4 rounded-2xl text-center cursor-pointer flex flex-col items-center justify-center">
-                <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1.5 mb-2 shadow-lg">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1.5 mb-2 shadow-lg">
                     <img src="images/we.png" alt="WE Pay" class="w-full h-full object-contain">
                 </div>
                 <h3 class="font-bold text-xs text-purple-400">وي باي (WE)</h3>
@@ -287,7 +311,7 @@
 
     <!-- صفحة خيارات المحفظة -->
     <div id="page-action" class="hidden-page glass-panel w-full max-w-md p-8 text-center page-transition">
-        <button onclick="showPage('page-wallets', true)" class="text-gray-400 hover:text-white mb-4 flex items-center gap-2 transition">
+        <button onclick="showPage('page-wallets', true)" class="text-gray-400 hover:text-white mb-4 flex items-center gap-2 transition hover:-translate-x-1 duration-300">
             <i class="fas fa-arrow-right"></i> رجوع
         </button>
         <div class="w-16 h-16 bg-white/10 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-inner">
@@ -296,13 +320,13 @@
         <h2 id="wallet-title" class="text-xl font-bold mb-2">خيارات التحويل</h2>
         <p class="text-gray-400 text-sm mb-6">اختر الطريقة المفضلة لديك للتحويل</p>
         <div class="space-y-3">
-            <button onclick="openWalletApp()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:opacity-90 text-white font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-lg">
+            <button onclick="openWalletApp()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:opacity-90 active:scale-95 text-white font-bold py-3.5 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg">
                 <i class="fas fa-external-link-alt"></i> <span id="open-app-text">فتح التطبيق</span>
             </button>
-            <button onclick="openDialer()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-lg">
+            <button onclick="openDialer()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-3.5 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg">
                 <i class="fas fa-phone-alt"></i> طلب كود الاتصال السريع (USSD)
             </button>
-            <button onclick="copyNumber('01003013765')" class="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3.5 rounded-2xl transition border border-white/10 flex items-center justify-center gap-2">
+            <button onclick="copyNumber('01003013765')" class="w-full bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold py-3.5 rounded-2xl transition-all duration-300 border border-white/10 flex items-center justify-center gap-2">
                 <i class="far fa-copy"></i> نسخ رقم المحفظة (01003013765)
             </button>
         </div>
@@ -310,13 +334,13 @@
             <p class="text-xs text-gray-400 mb-1">رقم المحفظة (ياسر محمد):</p>
             <div class="flex items-center justify-center gap-3">
                 <span class="font-mono text-lg font-bold tracking-wider text-green-400">01003013765</span>
-                <button onclick="copyNumber('01003013765')" class="text-indigo-400 hover:text-indigo-300" title="نسخ الرقم">
+                <button onclick="copyNumber('01003013765')" class="text-indigo-400 hover:text-indigo-300 active:scale-95" title="نسخ الرقم">
                     <i class="far fa-copy text-lg"></i>
                 </button>
             </div>
         </div>
         <div class="mt-4">
-            <button onclick="showPage('page-confirm', true)" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold py-3.5 rounded-2xl transition shadow-lg flex items-center justify-center gap-2">
+            <button onclick="showPage('page-confirm', true)" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 active:scale-95 text-white font-bold py-4 rounded-2xl transition-all duration-300 shadow-lg flex items-center justify-center gap-2">
                 <i class="fas fa-check-circle"></i> أنا حولت، أكد التحويل 🚀
             </button>
         </div>
@@ -324,7 +348,7 @@
 
     <!-- صفحة تأكيد التحويل -->
     <div id="page-confirm" class="hidden-page glass-panel w-full max-w-md p-8 page-transition">
-        <button onclick="showPage('page-main', true)" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition">
+        <button onclick="showPage('page-main', true)" class="text-gray-400 hover:text-white mb-6 flex items-center gap-2 transition hover:-translate-x-1 duration-300">
             <i class="fas fa-arrow-right"></i> رجوع للرئيسية
         </button>
         <h2 class="text-xl font-bold text-center mb-1">تأكيد بيانات التحويل</h2>
@@ -333,15 +357,15 @@
         <div class="space-y-4 text-right">
             <div>
                 <label class="block text-xs text-gray-300 mb-1">اسم صاحب الحساب أو المحفظة المحول منه:</label>
-                <input type="text" id="sender-name" placeholder="مثال: أحمد محمد علي" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition">
+                <input type="text" id="sender-name" placeholder="مثال: أحمد محمد علي" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition duration-300">
             </div>
             <div>
                 <label class="block text-xs text-gray-300 mb-1">رقم هاتفك المحول منه (11 رقم):</label>
-                <input type="tel" id="sender-phone" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left transition" dir="ltr">
+                <input type="tel" id="sender-phone" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 font-mono text-left transition duration-300" dir="ltr">
             </div>
             <div>
                 <label class="block text-xs text-gray-300 mb-1">رقم الواتساب الخاص بك (للتواصل عند الحاجة):</label>
-                <input type="tel" id="sender-whatsapp" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 font-mono text-left transition" dir="ltr">
+                <input type="tel" id="sender-whatsapp" placeholder="010xxxxxxxx" maxlength="11" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 font-mono text-left transition duration-300" dir="ltr">
             </div>
             <div class="relative">
                 <label class="block text-xs text-gray-300 mb-1">طريقة التحويل:</label>
@@ -361,11 +385,11 @@
             </div>
             <div>
                 <label class="block text-xs text-gray-300 mb-1">توقيت التحويل (الساعة والتاريخ):</label>
-                <input type="text" id="transfer-time" placeholder="مثال: اليوم 5:30 مساءً" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition">
+                <input type="text" id="transfer-time" placeholder="مثال: اليوم 5:30 مساءً" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition duration-300">
             </div>
             <div>
                 <label class="block text-xs text-gray-300 mb-1">صورة إيصال التحويل (سكرين شوت):</label>
-                <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/20 rounded-2xl cursor-pointer bg-white/5 hover:bg-white/10 transition relative overflow-hidden">
+                <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/20 rounded-2xl cursor-pointer bg-white/5 hover:bg-white/10 hover:border-indigo-500/50 transition duration-300 relative overflow-hidden">
                     <div id="preview-container" class="hidden absolute inset-0 w-full h-full bg-black/60 flex items-center justify-center p-2">
                         <img id="image-preview" src="" alt="معاينة الإيصال" class="max-h-full max-w-full rounded-xl object-contain shadow-md">
                     </div>
@@ -376,7 +400,7 @@
                     <input type="file" id="receipt-file" accept="image/*" class="hidden" onchange="updateFileLabel()">
                 </label>
             </div>
-            <button id="submit-btn" onclick="submitWithoutAI()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold py-4 rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 mt-2">
+            <button id="submit-btn" onclick="submitWithoutAI()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 active:scale-95 text-white font-bold py-4 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/40 mt-2">
                 <i class="fas fa-check-circle"></i> <span id="submit-btn-text">تأكيد وإرسال التحويل</span>
             </button>
         </div>
@@ -426,22 +450,14 @@
             return typeDesc;
         }
 
-        // تحديد الصفحة المطلوبة تلقائياً بناءً على الابط (Hash) عند التحميل
         window.onload = function() {
             fetchClientIP();
-            
             const hash = window.location.hash.replace('#', '');
-            if (hash === 'bank') {
-                showPage('page-bank', false);
-            } else if (hash === 'wallets') {
-                showPage('page-wallets', false);
-            } else if (hash === 'confirm') {
-                showPage('page-confirm', false);
-            } else if (hash === 'vodafone' || hash === 'orange' || hash === 'etisalat' || hash === 'we') {
-                selectWallet(hash);
-            } else {
-                showPage('page-main', false);
-            }
+            if (hash === 'bank') showPage('page-bank', false);
+            else if (hash === 'wallets') showPage('page-wallets', false);
+            else if (hash === 'confirm') showPage('page-confirm', false);
+            else if (['vodafone', 'orange', 'etisalat', 'we'].includes(hash)) selectWallet(hash);
+            else showPage('page-main', false);
 
             const savedName = localStorage.getItem('draft_sender_name');
             const savedPhone = localStorage.getItem('draft_sender_phone');
@@ -590,7 +606,6 @@
             }
         });
 
-        // دالة التنقل بين الصفحات وتحديث الرابط تلقائياً
         window.showPage = function(pageId, updateHistory = true) {
             document.querySelectorAll('div[id^="page-"]').forEach(el => el.classList.add('hidden-page'));
             const targetPage = document.getElementById(pageId);
